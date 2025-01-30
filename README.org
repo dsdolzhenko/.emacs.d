@@ -1,0 +1,34 @@
+#+TITLE: Emacs Configuration
+
+* Setup
+** Install Emacs
+I use the latest available version on https://emacsformacosx.com/
+** Clone the repository
+I usually put it right in my home directory, but it also possible to clone it into ~~/.config/emacs~
+
+#+begin_src sh
+  git clone git@github.com:dsdolzhenko/.emacs.d.git
+#+end_src
+** Clone the submodules
+There are few packages not-available on MELPA which I added as submodules to the repository.
+
+#+begin_src sh
+  git submodule update --init --recursive
+#+end_src
+** Install fonts
+I use ~JetBrains Mono~ fonts.
+
+#+begin_src sh
+  brew install --cask font-jetbrains-mono
+#+end_src
+** Install enchant
+It’s required by ~jinx~ package.
+
+#+begin_src sh
+  brew install enchant
+#+end_src
+** Install pkg-config
+So emacs could find enchant and other dynamic libraries installed with homebrew
+#+begin_src
+  brew install pkg-config
+#+end_src
