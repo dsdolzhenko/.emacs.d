@@ -608,6 +608,11 @@ capture was not aborted."
 
 ;;;; Org
 
+(use-package ob-mermaid
+  :ensure t
+  :after org
+  :custom (ob-mermaid-cli-path "mmdc"))
+
 (use-package org
   :ensure t
   :custom
@@ -694,7 +699,8 @@ capture was not aborted."
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((shell . t))))
+   '((shell . t)
+     (mermaid . t))))
 
 (use-package org-indent
   :defer t
