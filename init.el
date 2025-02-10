@@ -29,6 +29,9 @@
 (eval-when-compile
   (require 'use-package))
 
+;; Uncomment to collect statistics
+;; (setq use-package-compute-statistics t)
+
 ;;; Server
 
 (server-start)
