@@ -164,8 +164,7 @@ The DWIM behaviour of this command is as follows:
   :custom
   (electric-quote-replace-double t)
   (electric-quote-string nil)
-  :config
-  (electric-quote-mode))
+  :hook (text-mode . electric-quote-mode))
 
 ;; Replace dabbrev-expand with hippie-expand
 ;; https://www.masteringemacs.org/article/text-expansion-hippie-expand
