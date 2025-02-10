@@ -388,6 +388,8 @@ The DWIM behaviour of this command is as follows:
 
 (use-package outshine
   :ensure t
+  :defer t
+  :diminish outshine-mode
   :hook ((emacs-lisp-mode . outshine-mode)))
 
 
@@ -490,6 +492,7 @@ capture was not aborted."
 
 (use-package org-roam
   :ensure t
+  :defer t
   :custom
   (org-roam-directory "~/Documents/roam")
   (org-roam-node-display-template
@@ -543,14 +546,18 @@ capture was not aborted."
   :hook (org-mode . org-roam-dblocks-autoupdate-mode))
 
 (use-package org-drill
-  :ensure t)
+  :ensure t
+  :defer t
+  :after org)
 
 (use-package ts
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package org-roam-review
   :after org
   :load-path "contrib/chrisbarrett-nursery/lisp/"
+  :defer t
   :hook (org-roam-capture-new-node . org-roam-review-set-seedling)
   :commands (org-roam-review
              org-roam-review-list-by-maturity
@@ -601,6 +608,7 @@ capture was not aborted."
 
 (use-package denote-menu
   :ensure t
+  :defer t
   :bind (("C-c z" . denote-menu-list-notes)
          (:map denote-menu-mode-map
                ("c" . denote-menu-clear-filters)
@@ -747,6 +755,7 @@ capture was not aborted."
 ;; Spellchecking in org and text modes
 (use-package jinx
   :ensure t
+  :defer t
   :custom
   (jinx-languages "en_GB")
   :hook
@@ -758,6 +767,7 @@ capture was not aborted."
 
 (use-package flymake-languagetool
   :ensure t
+  :defer t
   :hook ((text-mode       . flymake-languagetool-load)
          (latex-mode      . flymake-languagetool-load)
          (org-mode        . flymake-languagetool-load)
@@ -775,6 +785,7 @@ capture was not aborted."
 
 (use-package gptel
   :ensure t
+  :defer t
   :preface
   (defun dd/gptel-api-key (host)
     (let ((auth (car (auth-source-search :host host))))
@@ -809,6 +820,7 @@ capture was not aborted."
 
 (use-package paredit
   :ensure t
+  :defer t
   :diminish paredit-mode
   :hook ((emacs-lisp-mode . paredit-mode)
          (clojure-mode . paredit-mode)
@@ -818,6 +830,7 @@ capture was not aborted."
 
 (use-package projectile
   :ensure t
+  :defer t
   :custom
   (projectile-switch-project-action 'projectile-commander)
   :config
@@ -844,8 +857,9 @@ capture was not aborted."
 
 (use-package editorconfig
   :ensure t
+  :defer t
   :diminish editorconfig-mode
-  :config (editorconfig-mode 1))
+  :hook (prog-mode . editorconfig-mode))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -869,12 +883,13 @@ capture was not aborted."
 
 (use-package gtags-mode
   :ensure t
+  :defer t
   :diminish gtags-mode)
 
 (use-package markdown-mode
   :ensure t
-  :custom (markdown-command "/usr/local/bin/pandoc")
-  :defer t)
+  :defer t
+  :custom (markdown-command "pandoc"))
 
 (use-package sh-script
   :ensure t
@@ -896,7 +911,8 @@ capture was not aborted."
   (advice-add 'asm-calculate-indentation :filter-return #'dd/asm-calculate-indentation))
 
 (use-package cider
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package web-mode
   :ensure t
@@ -905,32 +921,28 @@ capture was not aborted."
          ("\\.liquid\\'" . web-mode)))
 
 (use-package go-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package rust-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package cmake-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package yaml-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package jinja2-mode
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package dockerfile-mode
-  :ensure t)
-
-(use-package typescript-mode
-  :ensure t)
-
-(use-package robe
   :ensure t
-  :hook ((ruby-mode . robe-mode))
-  :config
-  (eval-after-load 'company
-    '(push 'company-robe company-backends)))
+  :defer t)
 
 (use-package treesit
   :mode (("\\.tsx\\'" . tsx-ts-mode))
@@ -965,7 +977,6 @@ capture was not aborted."
   (dolist (mapping
            '((python-mode . python-ts-mode)
              (css-mode . css-ts-mode)
-             (typescript-mode . typescript-ts-mode)
              (js2-mode . js-ts-mode)
              (bash-mode . bash-ts-mode)
              (conf-toml-mode . toml-ts-mode)
@@ -981,11 +992,14 @@ capture was not aborted."
 
 (use-package yasnippet
   :ensure t
+  :defer t
   :diminish yas-minor-mode
-  :config
-  (yas-global-mode 1))
+  :hook (prog-mode . yas-minor-mode))
 
 (use-package yasnippet-snippets
-  :ensure t)
+  :ensure t
+  :defer t
+  :after yasnippet)
+
 
 ;;; init.el ends here
