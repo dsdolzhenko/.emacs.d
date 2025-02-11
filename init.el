@@ -489,6 +489,26 @@ capture was not aborted."
                                                           "#+TITLE: ${title}\n#+CATEGORY: ${title}\n#+FILETAGS: :project:\n"
                                                           ("Tasks"))))))
 
+(defun dd/org-roam-update-filename-on-title-change ()
+   "Update filename when the title of an org-roam buffer changes.
+    Does not affect dailies nodes."
+   (let ((node (org-roam-node-at-point)))
+     ;; Skip if this is a dailies file
+     (unless (org-roam-dailies--daily-note-p)
+       (let* ((slug (org-roam-node-slug node))
+              (old-filename (buffer-file-name))
+              ;; Extract the timestamp from the current filename
+              (timestamp (when (string-match "\\([0-9]\\{14\\}\\)" old-filename)
+                         (match-string 1 old-filename)))
+              (new-filename (expand-file-name
+                            (concat (file-name-directory old-filename)
+                                  timestamp "-" slug ".org"))))
+         (unless (string-equal old-filename new-filename)
+           (rename-file old-filename new-filename)
+           (set-visited-file-name new-filename)
+           (save-buffer)
+           (dd/org-roam-refresh-agenda-list))))))
+
 (use-package org-roam
   :ensure t
   :defer t
@@ -531,6 +551,8 @@ capture was not aborted."
          ("T" . org-roam-dailies-capture-tomorrow))
   :bind-keymap
   ("C-c n d" . org-roam-dailies-map)
+  :hook
+  (org-roam-find-file-hook . (lambda () (add-hook 'after-save-hook #'dd/org-roam-update-filename-on-title-change nil t)))
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
   (org-roam-setup)
