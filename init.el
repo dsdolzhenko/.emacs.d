@@ -226,10 +226,11 @@ The DWIM behaviour of this command is as follows:
 
 ;;;; Modeline
 
-;; Utility to hide non-essential minor-modes from the modeline
-(use-package diminish
-  :ensure t)
-
+;; Minimalistic layout for the modeline
+(use-package mood-line
+  :ensure t
+  :config
+  (mood-line-mode))
 
 ;;;; Minibuffer
 
@@ -372,7 +373,6 @@ The DWIM behaviour of this command is as follows:
 ;; incomplete command (a prefix) in a popup
 (use-package which-key
   :ensure t
-  :diminish which-key-mode
   :config (which-key-mode))
 
 ;;;; Bookmarks
@@ -388,7 +388,6 @@ The DWIM behaviour of this command is as follows:
 (use-package outshine
   :ensure t
   :defer t
-  :diminish outshine-mode
   :hook ((emacs-lisp-mode . outshine-mode)))
 
 
@@ -738,12 +737,10 @@ capture was not aborted."
      (mermaid . t))))
 
 (use-package org-indent
-  :defer t
-  :diminish org-indent-mode)
+  :defer t)
 
 (use-package simple
-  :defer t
-  :diminish visual-line-mode)
+  :defer t)
 
 ;; Wrap lines at fill-column in org-mode
 (use-package visual-fill-column
@@ -785,7 +782,6 @@ capture was not aborted."
   :hook
   (text-mode . jinx-mode)
   (org-mode . jinx-mode)
-  :diminish jinx-mode
   :bind (("s-$" . jinx-correct)
          ("C-s-$" . jinx-languages)))
 
@@ -845,7 +841,6 @@ capture was not aborted."
 (use-package paredit
   :ensure t
   :defer t
-  :diminish paredit-mode
   :hook ((emacs-lisp-mode . paredit-mode)
          (clojure-mode . paredit-mode)
          (cider-repl-mode . paredit-mode)
@@ -871,7 +866,6 @@ capture was not aborted."
   :ensure t
   :defer t
   :custom (company-idle-delay 0.5)
-  :diminish company-mode
   :hook ((prog-mode . company-mode)
          (cider-repl-mode . company-mode))
   :bind (:map company-active-map
@@ -882,7 +876,6 @@ capture was not aborted."
 (use-package editorconfig
   :ensure t
   :defer t
-  :diminish editorconfig-mode
   :hook (prog-mode . editorconfig-mode))
 
 (use-package rainbow-delimiters
@@ -907,8 +900,7 @@ capture was not aborted."
 
 (use-package gtags-mode
   :ensure t
-  :defer t
-  :diminish gtags-mode)
+  :defer t)
 
 (use-package markdown-mode
   :ensure t
@@ -1017,7 +1009,6 @@ capture was not aborted."
 (use-package yasnippet
   :ensure t
   :defer t
-  :diminish yas-minor-mode
   :hook (prog-mode . yas-minor-mode))
 
 (use-package yasnippet-snippets
