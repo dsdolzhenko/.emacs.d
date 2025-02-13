@@ -419,13 +419,6 @@ The DWIM behaviour of this command is as follows:
 
 ;;;; Roam
 
-(defun dd/org-roam-node-insert-immediate (arg &rest args)
-  (interactive "P")
-  (let ((args (cons arg args))
-        (org-roam-capture-templates (list (append (car org-roam-capture-templates)
-                                                  '(:immediate-finish t)))))
-    (apply #'org-roam-node-insert args)))
-
 (defun dd/org-roam-filter-by-tag (tag-name)
   (lambda (node)
     (member tag-name (org-roam-node-tags node))))
@@ -542,7 +535,6 @@ capture was not aborted."
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n o" . org-roam-node-open)
-         ("C-c n I" . dd/org-roam-node-insert-immediate)
          ("C-c n p" . dd/org-roam-find-project)
          ("C-c n c" . dd/org-roam-capture-inbox)
          ("C-c n t" . dd/org-roam-capture-task)
