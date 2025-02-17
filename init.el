@@ -483,26 +483,29 @@ capture was not aborted."
 
 (defun dd/org-roam-update-filename-on-title-change ()
   "Update filename when the title of an org-roam buffer changes."
-  (let ((node (org-roam-node-at-point)))
-    (let* ((old-filename (buffer-file-name))
-           ;; Check if the node is daily note
-           (is-not-daily (not (org-roam-dailies--daily-note-p)))
-           ;; Check if filename matches the pattern of regular org-roam nodes
-           (is-matching-file (string-match "^[0-9]\\{14\\}-.*\\.org$"
-                                           (file-name-nondirectory old-filename))))
-      (when (and is-not-daily is-matching-file)
-        (let* ((slug (org-roam-node-slug node))
-               ;; Extract the timestamp from the current filename
-               (timestamp (when (string-match "\\([0-9]\\{14\\}\\)" old-filename)
-                            (match-string 1 old-filename)))
-               (new-filename (expand-file-name
-                              (concat (file-name-directory old-filename)
-                                      timestamp "-" slug ".org"))))
-          (unless (string-equal old-filename new-filename)
-            (rename-file old-filename new-filename)
-            (set-visited-file-name new-filename)
-            (save-buffer)
-            (dd/org-roam-refresh-agenda-list)))))))
+  (let* ((old-filename (buffer-file-name))
+         ;; Check if the node is daily note
+         (is-not-daily (not (org-roam-dailies--daily-note-p)))
+         ;; Check if filename matches the pattern of regular org-roam nodes
+         (is-matching-file (string-match "^[0-9]\\{14\\}-.*\\.org$"
+                                         (file-name-nondirectory old-filename))))
+    ;; Update org-roam cache
+    (org-roam-db-update-file old-filename)
+    (when (and is-not-daily is-matching-file)
+      (let* ((node (org-roam-node-at-point))
+             (slug (org-roam-node-slug node))
+             ;; Extract the timestamp from the current filename
+             (timestamp (when (string-match "\\([0-9]\\{14\\}\\)" old-filename)
+                          (match-string 1 old-filename)))
+             (new-filename (expand-file-name
+                            (concat (file-name-directory old-filename)
+                                    timestamp "-" slug ".org"))))
+        (unless (string-equal old-filename new-filename)
+          (rename-file old-filename new-filename)
+          (set-visited-file-name new-filename)
+          (save-buffer)
+          (dd/org-roam-refresh-agenda-list))))))
+
 
 (use-package org-roam
   :ensure t
