@@ -13,11 +13,6 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
-;;; Networking
-
-;; Don't ping things that look like domain names.
-(setq ffap-machine-p-known 'reject)
-
 ;;; Packages
 
 ;; Initialize and refresh package contents again if needed
