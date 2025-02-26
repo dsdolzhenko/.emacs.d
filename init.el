@@ -555,7 +555,7 @@ capture was not aborted."
   (org-roam-find-file-hook . (lambda () (add-hook 'after-save-hook #'dd/org-roam-update-filename-on-title-change nil t)))
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (org-roam-setup)
+  (org-roam-db-autosync-enable)
   (dd/org-roam-refresh-agenda-list))
 
 (use-package ht
