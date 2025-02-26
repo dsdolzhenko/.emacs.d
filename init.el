@@ -385,6 +385,31 @@ The DWIM behaviour of this command is as follows:
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+;;; Crux
+
+(use-package crux
+  :ensure t
+  :bind (("C-c r" . crux-rename-file-and-buffer)
+         ("C-c D" . crux-delete-file-and-buffer)
+         ("C-c d" . crux-duplicate-current-line-or-region)))
+
+;;; Projectile
+
+(use-package projectile
+  :ensure t
+  :defer t
+  :custom
+  (projectile-switch-project-action 'projectile-commander)
+  :config
+  (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :hook
+  ;; Update projectile status in modeline whenever a new buffer appears.
+  ;; Projectile updates its modeline status only on file with find-file-hook,
+  ;; which doesn't work with non-file buffers, such as magit-*.
+  (window-configuration-change . projectile-update-mode-line))
+
 ;;; Roam
 
 (defun dd/org-roam-filter-by-tag (tag-name)
@@ -800,23 +825,6 @@ capture was not aborted."
   (magit-bury-buffer-function 'magit-restore-window-configuration)
   :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer)))
 
-;;; Projectile
-
-(use-package projectile
-  :ensure t
-  :defer t
-  :custom
-  (projectile-switch-project-action 'projectile-commander)
-  :config
-  (projectile-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
-  :hook
-  ;; Update projectile status in modeline whenever a new buffer appears.
-  ;; Projectile updates its modeline status only on file with find-file-hook,
-  ;; which doesn't work with non-file buffers, such as magit-*.
-  (window-configuration-change . projectile-update-mode-line))
-
 ;;; LSP
 
 (use-package eglot
@@ -846,6 +854,18 @@ capture was not aborted."
               ("C-j" . company-complete-selection)
               ("C-n" . company-select-next)
               ("C-p" . company-select-previous)))
+
+;;; Snippets
+
+(use-package yasnippet
+  :ensure t
+  :defer t
+  :hook (prog-mode . yas-minor-mode))
+
+(use-package yasnippet-snippets
+  :ensure t
+  :defer t
+  :after yasnippet)
 
 ;;; Lisp
 
@@ -881,33 +901,9 @@ capture was not aborted."
   :config
   (advice-add 'asm-calculate-indentation :filter-return #'dd/asm-calculate-indentation))
 
-;;; Programming
+;;; C/C++
 
 (use-package gtags-mode
-  :ensure t
-  :defer t)
-
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :custom (markdown-command "pandoc"))
-
-(use-package sh-script
-  :ensure t
-  :defer t
-  :hook (sh-mode . flymake-mode))
-
-(use-package web-mode
-  :ensure t
-  :mode (("\\.html\\'" . web-mode)
-         ("\\.njk\\'" . web-mode)
-         ("\\.liquid\\'" . web-mode)))
-
-(use-package go-mode
-  :ensure t
-  :defer t)
-
-(use-package rust-mode
   :ensure t
   :defer t)
 
@@ -915,13 +911,53 @@ capture was not aborted."
   :ensure t
   :defer t)
 
+;;; Markdown
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :custom (markdown-command "pandoc"))
+
+;;; Bash
+
+(use-package sh-script
+  :ensure t
+  :defer t
+  :hook (sh-mode . flymake-mode))
+
+;;; HTML
+
+(use-package web-mode
+  :ensure t
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.njk\\'" . web-mode)
+         ("\\.liquid\\'" . web-mode)))
+
+;;; Go
+
+(use-package go-mode
+  :ensure t
+  :defer t)
+
+;;; Rust
+
+(use-package rust-mode
+  :ensure t
+  :defer t)
+
+;;; YAML
+
 (use-package yaml-mode
   :ensure t
   :defer t)
 
+;;; Jinja
+
 (use-package jinja2-mode
   :ensure t
   :defer t)
+
+;;; Docker
 
 (use-package dockerfile-mode
   :ensure t
@@ -979,25 +1015,5 @@ capture was not aborted."
          ("\\.json\\'" .  json-ts-mode))
   :config
   (dd/setup-install-grammars))
-
-;;; Snippets
-
-(use-package yasnippet
-  :ensure t
-  :defer t
-  :hook (prog-mode . yas-minor-mode))
-
-(use-package yasnippet-snippets
-  :ensure t
-  :defer t
-  :after yasnippet)
-
-;;; Crux
-
-(use-package crux
-  :ensure t
-  :bind (("C-c r" . crux-rename-file-and-buffer)
-         ("C-c D" . crux-delete-file-and-buffer)
-         ("C-c d" . crux-duplicate-current-line-or-region)))
 
 ;;; init.el ends here
