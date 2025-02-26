@@ -53,25 +53,32 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-
-;;; Input
+;;; Editing
 
 ;; Use Command key on MacOS to Meta key.
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier 'super)
 
-;; Translate input sequences into English.
-;;
-;; I have two Input Sources setup on my computer.
-;; I don't want to use the input method switching
-;; mechanism built in into Emacs. Instead, I want
-;; key bindings to work no matter which Input Source
-;; is currently active.
-;;
-(use-package reverse-im
-  :ensure t
-  :custom (reverse-im-input-methods '("russian-computer"))
-  :config (reverse-im-mode t))
+;; Newline at the and of a file
+(setq require-final-newline t)
+
+;; Use spaces instead of tabs when indenting
+(setq-default indent-tabs-mode nil)
+
+;; Delete trailing whitespaces
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; Make kill-visual-line kill the whole line
+(defalias 'kill-visual-line 'kill-line)
+
+;; Require final newline
+(setq require-final-newline t)
+
+;; Replace selected text by typing
+(setq delete-selection-mode t)
+
+;; Replace selected text by typing
+(delete-selection-mode t)
 
 (defun dd/keyboard-quit-dwim ()
   "Do-What-I-Mean behaviour for a general `keyboard-quit'.
@@ -99,29 +106,19 @@ The DWIM behaviour of this command is as follows:
 
 (define-key global-map (kbd "C-g") #'dd/keyboard-quit-dwim)
 
-;;; Editor
+;; Translate input sequences into English.
+;;
+;; I have two Input Sources setup on my computer.
+;; I don't want to use the input method switching
+;; mechanism built in into Emacs. Instead, I want
+;; key bindings to work no matter which Input Source
+;; is currently active.
+(use-package reverse-im
+  :ensure t
+  :custom (reverse-im-input-methods '("russian-computer"))
+  :config (reverse-im-mode t))
 
-;; Newline at the and of a file
-(setq require-final-newline t)
-
-;; Use spaces instead of tabs when indenting
-(setq-default indent-tabs-mode nil)
-
-;; Delete trailing whitespaces
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Make kill-visual-line kill the whole line
-(defalias 'kill-visual-line 'kill-line)
-
-;; Require final newline
-(setq require-final-newline t)
-
-;; Replace selected text by typing
-(setq delete-selection-mode t)
-
-;; Replace selected text by typing
-(delete-selection-mode t)
-
+;; Enable electric quote mode for text modes
 (use-package electric
   :custom
   (electric-quote-replace-double t)
