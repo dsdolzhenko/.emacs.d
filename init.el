@@ -50,12 +50,6 @@
 ;; Set the fringe a little wider to ensure the text isn’t too close to the frame borders
 (fringe-mode 10)
 
-;;; Frames and windows
-
-;; Resizing the Emacs frame can be costly when changing the font. Disable this
-;; to improve startup times with fonts larger than the system default.
-(setq frame-resize-pixelwise t)
-
 ;;; Environment
 
 ;; Get environment variables from shell
@@ -190,18 +184,11 @@ The DWIM behaviour of this command is as follows:
 (setq kept-old-versions 2)   ;; Number of oldest versions to keep.
 (setq version-control t)     ;; Use version numbers for backups.
 
-;;;; Buffers
+;;;; Frames
 
-;; Shortcut to kill the current buffer.
-;;
-;; Unlike the default, this one kills the buffer
-;; *without confirmation* if it is not modified.
-(defun dd/kill-this-buffer ()
-  (interactive)
-  (kill-buffer (current-buffer)))
-
-(global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
-
+;; Resizing the Emacs frame can be costly when changing the font. Disable this
+;; to improve startup times with fonts larger than the system default.
+(setq frame-resize-pixelwise t)
 
 ;;;; Windows
 
@@ -222,6 +209,18 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :custom (aw-dispatch-always t)
   :bind ("C-c w" . ace-window))
+
+;;;; Buffers
+
+;; Shortcut to kill the current buffer.
+;;
+;; Unlike the default, this one kills the buffer
+;; *without confirmation* if it is not modified.
+(defun dd/kill-this-buffer ()
+  (interactive)
+  (kill-buffer (current-buffer)))
+
+(global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
 
 ;;;; Modeline
 
