@@ -164,6 +164,11 @@ The DWIM behaviour of this command is as follows:
 ;; https://www.masteringemacs.org/article/text-expansion-hippie-expand
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
+(use-package editorconfig
+  :ensure t
+  :defer t
+  :hook (prog-mode . editorconfig-mode))
+
 (use-package avy
   :ensure t
   :bind (("C-:" . avy-goto-char-2)))
@@ -822,28 +827,21 @@ capture was not aborted."
     :stream t
     :key (dd/gptel-api-key "api.anthropic.com")))
 
-;;; Programming
-
-(defun x/magit-kill-diff-buffer ()
-  (when-let ((buffer (magit-get-mode-buffer 'magit-diff-mode)))
-    (kill-buffer buffer)))
+;;; Git
 
 (use-package magit
   :ensure t
   :defer t
+  :preface
+  (defun dd/magit-kill-diff-buffer ()
+    (when-let ((buffer (magit-get-mode-buffer 'magit-diff-mode)))
+      (kill-buffer buffer)))
   :custom
   (magit-display-buffer-function 'magit-display-buffer-fullframe-status-topleft-v1)
   (magit-bury-buffer-function 'magit-restore-window-configuration)
-  :hook ((git-commit-post-finish . x/magit-kill-diff-buffer)))
+  :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer)))
 
-(use-package paredit
-  :ensure t
-  :defer t
-  :hook ((emacs-lisp-mode . paredit-mode)
-         (clojure-mode . paredit-mode)
-         (cider-repl-mode . paredit-mode)
-         (lisp-data-mode . paredit-mode)
-         (eval-expression-minibuffer-setup . paredit-mode)))
+;;; Projectile
 
 (use-package projectile
   :ensure t
@@ -860,26 +858,7 @@ capture was not aborted."
   ;; which doesn't work with non-file buffers, such as magit-*.
   (window-configuration-change . projectile-update-mode-line))
 
-(use-package company
-  :ensure t
-  :defer t
-  :custom (company-idle-delay 0.5)
-  :hook ((prog-mode . company-mode)
-         (cider-repl-mode . company-mode))
-  :bind (:map company-active-map
-              ("C-j" . company-complete-selection)
-              ("C-n" . company-select-next)
-              ("C-p" . company-select-previous)))
-
-(use-package editorconfig
-  :ensure t
-  :defer t
-  :hook (prog-mode . editorconfig-mode))
-
-(use-package rainbow-delimiters
-  :ensure t
-  :defer t
-  :hook (prog-mode . rainbow-delimiters-mode))
+;;; LSP
 
 (use-package eglot
   :defer t
@@ -896,19 +875,37 @@ capture was not aborted."
                       :weight 'normal
                       :inherit '()))
 
-(use-package gtags-mode
+;;; Auto-complete
+
+(use-package company
+  :ensure t
+  :defer t
+  :custom (company-idle-delay 0.5)
+  :hook ((prog-mode . company-mode)
+         (cider-repl-mode . company-mode))
+  :bind (:map company-active-map
+              ("C-j" . company-complete-selection)
+              ("C-n" . company-select-next)
+              ("C-p" . company-select-previous)))
+
+;;; Lisp
+
+(use-package paredit
+  :ensure t
+  :defer t
+  :hook ((emacs-lisp-mode . paredit-mode)
+         (clojure-mode . paredit-mode)
+         (cider-repl-mode . paredit-mode)
+         (lisp-data-mode . paredit-mode)
+         (eval-expression-minibuffer-setup . paredit-mode)))
+
+;;; Clojure
+
+(use-package cider
   :ensure t
   :defer t)
 
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :custom (markdown-command "pandoc"))
-
-(use-package sh-script
-  :ensure t
-  :defer t
-  :hook (sh-mode . flymake-mode))
+;;; Assembler
 
 (use-package asm-mode
   :defer t
@@ -925,9 +922,26 @@ capture was not aborted."
   :config
   (advice-add 'asm-calculate-indentation :filter-return #'dd/asm-calculate-indentation))
 
-(use-package cider
+;;; Programming
+
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package gtags-mode
   :ensure t
   :defer t)
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :custom (markdown-command "pandoc"))
+
+(use-package sh-script
+  :ensure t
+  :defer t
+  :hook (sh-mode . flymake-mode))
 
 (use-package web-mode
   :ensure t
@@ -958,6 +972,8 @@ capture was not aborted."
 (use-package dockerfile-mode
   :ensure t
   :defer t)
+
+;;; Tree-sitter
 
 (use-package treesit
   :preface
