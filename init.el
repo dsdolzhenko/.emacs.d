@@ -407,14 +407,6 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
-;;; Crux
-
-(use-package crux
-  :ensure t
-  :bind (("C-c r" . crux-rename-file-and-buffer)
-         ("C-c D" . crux-delete-file-and-buffer)
-         ("C-c d" . crux-duplicate-current-line-or-region)))
-
 ;;; Roam
 
 (defun dd/org-roam-filter-by-tag (tag-name)
@@ -1022,5 +1014,12 @@ capture was not aborted."
   :defer t
   :after yasnippet)
 
+;;; Crux
+
+(use-package crux
+  :ensure t
+  :bind (("C-c r" . crux-rename-file-and-buffer)
+         ("C-c D" . crux-delete-file-and-buffer)
+         ("C-c d" . crux-duplicate-current-line-or-region)))
 
 ;;; init.el ends here
