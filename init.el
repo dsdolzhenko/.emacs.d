@@ -44,9 +44,6 @@
 ;; Persist session state (opened files, buffers, etc) between Emacs restarts
 (desktop-save-mode t)
 
-;; By default, Emacs "updates" its ui more often than it needs to
-(setq idle-update-delay 1.0)
-
 ;; Set the fringe a little wider to ensure the text isn’t too close to the frame borders
 (fringe-mode 10)
 
