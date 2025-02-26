@@ -372,7 +372,6 @@ The DWIM behaviour of this command is as follows:
 ;; Display the key bindings following the currently entered
 ;; incomplete command (a prefix) in a popup
 (use-package which-key
-  :ensure t
   :config (which-key-mode))
 
 ;;; Bookmarks
