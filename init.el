@@ -146,32 +146,6 @@ The DWIM behaviour of this command is as follows:
 (setq kept-old-versions 2)   ;; Number of oldest versions to keep.
 (setq version-control t)     ;; Use version numbers for backups.
 
-;;; Frames
-
-;; Resizing the Emacs frame can be costly when changing the font. Disable this
-;; to improve startup times with fonts larger than the system default.
-(setq frame-resize-pixelwise t)
-
-;;; Windows
-
-(use-package windmove
-  :ensure t
-  :bind (("C-<" . shrink-window-horizontally)
-         ("C->" . enlarge-window-horizontally)
-         ("C-^" . enlarge-window))
-  :config
-  (windmove-default-keybindings))
-
-(use-package transpose-frame
-  :ensure t
-  :defer t
-  :commands (transpose-frame))
-
-(use-package ace-window
-  :ensure t
-  :custom (aw-dispatch-always t)
-  :bind ("C-c w" . ace-window))
-
 ;;; Buffers
 
 ;; Shortcut to kill the current buffer.
@@ -194,6 +168,8 @@ The DWIM behaviour of this command is as follows:
 
 ;; Save minibuffer history
 (savehist-mode)
+
+;;; Complition
 
 ;; Vertical interactive completion
 (use-package vertico
@@ -230,70 +206,10 @@ The DWIM behaviour of this command is as follows:
 (define-key minibuffer-local-must-match-map
             "?" 'self-insert-command)
 
-;; Consulting completing-read
-(use-package consult
-    :ensure t
-    :bind
-    (;; Buffers
-     ("C-x b" . consult-buffer)
-     ("C-x 4 b" . consult-buffer-other-window)
-     ("C-x p b" . consult-project-buffer)
-     ;; Bookmarks
-     ("C-x r b" . consult-bookmark)
-
-     ;; Yank
-     ("M-y" . consult-yank-pop)
-
-     ;; imenu
-     ("M-i" . consult-imenu)
-     ("M-I" . consult-imenu-multi)
-     ("M-o" . consult-outline)
-     ("M-g i" . nil) ;; unset default binding for imenu
-
-     ;; M-s bindings in `search-map'
-     ("M-s d" . consult-find)
-     ("M-s r" . consult-ripgrep))
-
-    :init
-    ;; Use Consult to select xref locations with preview
-    (setq xref-show-xrefs-function #'consult-xref
-          xref-show-definitions-function #'consult-xref))
-
-(use-package embark
-  :ensure t
-
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-  :init
-
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-
-  ;; Show the Embark target at point via Eldoc. You may adjust the
-  ;; Eldoc strategy, if you want to see the documentation from
-  ;; multiple providers. Beware that using this can be a little
-  ;; jarring since the message shown in the minibuffer can be more
-  ;; than one line, causing the modeline to move up and down:
-
-  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
-  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
-
-  :config
-
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
-;; Consult users will also want the embark-consult package.
-(use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
+;; Display the key bindings following the currently entered
+;; incomplete command (a prefix) in a popup
+(use-package which-key
+  :config (which-key-mode))
 
 ;;; Look and feel
 
@@ -362,12 +278,25 @@ The DWIM behaviour of this command is as follows:
   :defer t
   :hook ((emacs-lisp-mode . outshine-mode)))
 
-;;; Help
+;;; Windows
 
-;; Display the key bindings following the currently entered
-;; incomplete command (a prefix) in a popup
-(use-package which-key
-  :config (which-key-mode))
+(use-package windmove
+  :ensure t
+  :bind (("C-<" . shrink-window-horizontally)
+         ("C->" . enlarge-window-horizontally)
+         ("C-^" . enlarge-window))
+  :config
+  (windmove-default-keybindings))
+
+(use-package transpose-frame
+  :ensure t
+  :defer t
+  :commands (transpose-frame))
+
+(use-package ace-window
+  :ensure t
+  :custom (aw-dispatch-always t)
+  :bind ("C-c w" . ace-window))
 
 ;;; Bookmarks
 
@@ -401,6 +330,60 @@ The DWIM behaviour of this command is as follows:
          :map minibuffer-local-completion-map
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
+
+;;; Consult
+
+;; Consulting completing-read
+(use-package consult
+  :ensure t
+  :bind
+  (;; Buffers
+   ("C-x b" . consult-buffer)
+   ("C-x 4 b" . consult-buffer-other-window)
+   ("C-x p b" . consult-project-buffer)
+   ;; Bookmarks
+   ("C-x r b" . consult-bookmark)
+
+   ;; Yank
+   ("M-y" . consult-yank-pop)
+
+   ;; imenu
+   ("M-i" . consult-imenu)
+   ("M-I" . consult-imenu-multi)
+   ("M-o" . consult-outline)
+   ("M-g i" . nil) ;; unset default binding for imenu
+
+   ;; M-s bindings in `search-map'
+   ("C-c s f" . consult-find)
+   ("C-c s r" . consult-ripgrep))
+
+  :init
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
+
+;;; Embark
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :ensure t ; only need to install it, embark loads it after consult if found
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Roam
 

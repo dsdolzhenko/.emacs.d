@@ -123,7 +123,11 @@
      ;; Suppress compiler warnings and don't inundate users with their popups.
      native-comp-async-report-warnings-errors 'silent))
 
-;;; UI elements
+;;; Look and feel
+
+;; Resizing the Emacs frame can be costly when changing the font. Disable this
+;; to improve startup times with fonts larger than the system default.
+(setq frame-resize-pixelwise t)
 
 ;; Hide frame title and frame icon
 (when (memq initial-window-system '(mac ns))
@@ -172,7 +176,7 @@
 ;; Set-language-environment sets default-input-method, which is unwanted.
 (setq default-input-method nil)
 
-;;; package.el
+;;; Packages
 
 (setq package-enable-at-startup nil)
 (setq package-quickstart nil)
