@@ -168,7 +168,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind (("C-:" . avy-goto-char-2)))
 
-;;;; Files
+;;; Files
 
 ;; Disable lock files
 (setq create-lockfiles nil)
@@ -181,13 +181,13 @@ The DWIM behaviour of this command is as follows:
 (setq kept-old-versions 2)   ;; Number of oldest versions to keep.
 (setq version-control t)     ;; Use version numbers for backups.
 
-;;;; Frames
+;;; Frames
 
 ;; Resizing the Emacs frame can be costly when changing the font. Disable this
 ;; to improve startup times with fonts larger than the system default.
 (setq frame-resize-pixelwise t)
 
-;;;; Windows
+;;; Windows
 
 (use-package windmove
   :ensure t
@@ -207,7 +207,7 @@ The DWIM behaviour of this command is as follows:
   :custom (aw-dispatch-always t)
   :bind ("C-c w" . ace-window))
 
-;;;; Buffers
+;;; Buffers
 
 ;; Shortcut to kill the current buffer.
 ;;
@@ -219,7 +219,7 @@ The DWIM behaviour of this command is as follows:
 
 (global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
 
-;;;; Modeline
+;;; Modeline
 
 ;; Minimalistic layout for the modeline
 (use-package mood-line
@@ -227,7 +227,7 @@ The DWIM behaviour of this command is as follows:
   :config
   (mood-line-mode))
 
-;;;; Minibuffer
+;;; Minibuffer
 
 ;; Always use short variant of yes-or-no dialog
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -338,13 +338,13 @@ The DWIM behaviour of this command is as follows:
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;;;; Fonts
+;;; Fonts
 
 ;; Set /JetBrains Mono/ as a default font face
 (set-face-attribute 'default nil :height 160 :family "JetBrains Mono")
 
 
-;;;; Theme
+;;; Theme
 
 ;; Use /modus-operandi/ as a default theme
 (use-package modus-themes
@@ -362,7 +362,7 @@ The DWIM behaviour of this command is as follows:
   (load-theme 'modus-operandi :no-confirm)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
-;;;; Help
+;;; Help
 
 ;; Display the key bindings following the currently entered
 ;; incomplete command (a prefix) in a popup
@@ -370,7 +370,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :config (which-key-mode))
 
-;;;; Bookmarks
+;;; Bookmarks
 
 (use-package bookmark
   :custom
@@ -378,7 +378,7 @@ The DWIM behaviour of this command is as follows:
   (bookmark-save-flag 1))
 
 
-;;;; Outline
+;;; Outline
 
 (use-package outshine
   :ensure t
@@ -386,7 +386,7 @@ The DWIM behaviour of this command is as follows:
   :hook ((emacs-lisp-mode . outshine-mode)))
 
 
-;;;; Dired
+;;; Dired
 
 ;; Display only file and directory names in dired.
 ;; Press `(`, to switch it back.
@@ -412,7 +412,7 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
-;;;; Crux
+;;; Crux
 
 (use-package crux
   :ensure t
@@ -420,7 +420,7 @@ The DWIM behaviour of this command is as follows:
          ("C-c D" . crux-delete-file-and-buffer)
          ("C-c d" . crux-duplicate-current-line-or-region)))
 
-;;;; Roam
+;;; Roam
 
 (defun dd/org-roam-filter-by-tag (tag-name)
   (lambda (node)
@@ -614,7 +614,7 @@ capture was not aborted."
   ("C-c n l" . consult-org-roam-forward-links)
   ("C-c n r" . consult-org-roam-search))
 
-;;;; Denote
+;;; Denote
 
 ;; Setup ~denote~ for note taking
 (use-package denote
@@ -638,7 +638,7 @@ capture was not aborted."
                ("/ o" . denote-menu-filter-out-keyword)
                ("e" . denote-menu-export-to-dired))))
 
-;;;; Org
+;;; Org
 
 (use-package ob-mermaid
   :ensure t
@@ -764,12 +764,12 @@ capture was not aborted."
   :custom (org-download-method 'attach))
 
 
-;;;; Mail
+;;; Mail
 
 (setq user-full-name "Dmitry Dolzhenko"
       user-mail-address "mailbox@dolzhenko.me")
 
-;;;; Text
+;;; Text
 
 ;; Spellchecking in org and text modes
 (use-package jinx
@@ -799,7 +799,7 @@ capture was not aborted."
       (setq flymake-languagetool-api-username (plist-get auth :user))
       (setq flymake-languagetool-api-key (funcall  (plist-get auth :secret))))))
 
-;;;; LLM
+;;; LLM
 
 (use-package gptel
   :ensure t
@@ -822,7 +822,7 @@ capture was not aborted."
     :stream t
     :key (dd/gptel-api-key "api.anthropic.com")))
 
-;;;; Programming
+;;; Programming
 
 (defun x/magit-kill-diff-buffer ()
   (when-let ((buffer (magit-get-mode-buffer 'magit-diff-mode)))
