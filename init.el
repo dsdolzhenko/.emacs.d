@@ -214,7 +214,9 @@ The DWIM behaviour of this command is as follows:
   (windmove-default-keybindings))
 
 (use-package transpose-frame
-  :ensure t)
+  :ensure t
+  :defer t
+  :commands (transpose-frame))
 
 (use-package ace-window
   :ensure t
