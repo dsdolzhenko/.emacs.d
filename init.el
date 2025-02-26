@@ -18,7 +18,7 @@
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
 
-;;; package.el
+;;; Packages
 
 ;; Initialize and refresh package contents again if needed
 (package-initialize)
@@ -39,7 +39,7 @@
   :if window-system
   :init (add-hook 'after-init-hook 'server-start t))
 
-;;; System
+;;; Desktop
 
 ;; Persist session state (opened files, buffers, etc) between Emacs restarts
 (desktop-save-mode t)
@@ -138,7 +138,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind (("C-:" . avy-goto-char-2)))
 
-;;; Files
+;;; Backups
 
 ;; Disable lock files
 (setq create-lockfiles nil)
@@ -759,13 +759,12 @@ capture was not aborted."
   :after org
   :custom (org-download-method 'attach))
 
-
 ;;; Mail
 
 (setq user-full-name "Dmitry Dolzhenko"
       user-mail-address "mailbox@dolzhenko.me")
 
-;;; Text
+;;; Spellchecking
 
 ;; Spellchecking in org and text modes
 (use-package jinx
