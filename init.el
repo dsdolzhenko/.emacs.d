@@ -44,9 +44,6 @@
 ;; Persist session state (opened files, buffers, etc) between Emacs restarts
 (desktop-save-mode t)
 
-;; Set the fringe a little wider to ensure the text isn’t too close to the frame borders
-(fringe-mode 10)
-
 ;;; Environment
 
 ;; Get environment variables from shell
@@ -122,37 +119,8 @@ The DWIM behaviour of this command is as follows:
 ;; Replace selected text by typing
 (setq delete-selection-mode t)
 
-;; Show whitespaces in programming modes
-(use-package whitespace
-  :diminish whitespace-mode
-  :hook
-  (prog-mode . whitespace-mode)
-  :custom
-  (whitespace-style '(face spaces space-mark tabs tab-mark)))
-
-;; Highlight current line
-(global-hl-line-mode t)
-
-;; Don't blink
-(blink-cursor-mode -1)
-
-;; Turn off alarms
-(setq ring-bell-function 'ignore)
-
-;; Narrow cursor
-(set-default 'cursor-type '(bar . 2))
-
 ;; Replace selected text by typing
 (delete-selection-mode t)
-
-;; Display line numbers
-(use-package display-line-numbers
-  :defer t
-  :custom (display-line-numbers-type 'visual)
-  :hook (prog-mode . display-line-numbers-mode))
-
-;; Display column number
-(setq column-number-mode t)
 
 (use-package electric
   :custom
@@ -223,14 +191,6 @@ The DWIM behaviour of this command is as follows:
   (kill-buffer (current-buffer)))
 
 (global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
-
-;;; Modeline
-
-;; Minimalistic layout for the modeline
-(use-package mood-line
-  :ensure t
-  :config
-  (mood-line-mode))
 
 ;;; Minibuffer
 
@@ -343,13 +303,25 @@ The DWIM behaviour of this command is as follows:
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-;;; Fonts
+;;; Look and feel
+
+;; Set the fringe a little wider to ensure the text isn’t too close to the frame borders
+(fringe-mode 10)
+
+;; Highlight current line
+(global-hl-line-mode t)
+
+;; Don't blink
+(blink-cursor-mode -1)
+
+;; Turn off alarms
+(setq ring-bell-function 'ignore)
+
+;; Narrow cursor
+(set-default 'cursor-type '(bar . 2))
 
 ;; Set /JetBrains Mono/ as a default font face
 (set-face-attribute 'default nil :height 160 :family "JetBrains Mono")
-
-
-;;; Theme
 
 ;; Use /modus-operandi/ as a default theme
 (use-package modus-themes
@@ -367,6 +339,37 @@ The DWIM behaviour of this command is as follows:
   (load-theme 'modus-operandi :no-confirm)
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
+;; Minimalistic layout for the modeline
+(use-package mood-line
+  :ensure t
+  :config
+  (mood-line-mode))
+
+;; Highlight delimiters (parentheses, brakets, and braces)
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Show whitespaces in programming modes
+(use-package whitespace
+  :diminish whitespace-mode
+  :hook
+  (prog-mode . whitespace-mode)
+  :custom
+  (whitespace-style '(face spaces space-mark tabs tab-mark)))
+
+;; Display line numbers
+(use-package display-line-numbers
+  :defer t
+  :custom (display-line-numbers-type 'visual)
+  :hook (prog-mode . display-line-numbers-mode))
+
+(use-package outshine
+  :ensure t
+  :defer t
+  :hook ((emacs-lisp-mode . outshine-mode)))
+
 ;;; Help
 
 ;; Display the key bindings following the currently entered
@@ -381,15 +384,6 @@ The DWIM behaviour of this command is as follows:
   :custom
   ;; Save bookmarks every time the list of bookmarks changes
   (bookmark-save-flag 1))
-
-
-;;; Outline
-
-(use-package outshine
-  :ensure t
-  :defer t
-  :hook ((emacs-lisp-mode . outshine-mode)))
-
 
 ;;; Dired
 
@@ -923,11 +917,6 @@ capture was not aborted."
   (advice-add 'asm-calculate-indentation :filter-return #'dd/asm-calculate-indentation))
 
 ;;; Programming
-
-(use-package rainbow-delimiters
-  :ensure t
-  :defer t
-  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package gtags-mode
   :ensure t
