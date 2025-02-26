@@ -912,7 +912,7 @@ capture was not aborted."
 
 (use-package asm-mode
   :defer t
-  :config
+  :preface
   (defun dd/asm-calculate-indentation (indentation)
     (or
      ;; Flush preprocessor macros to the left margin
@@ -922,6 +922,7 @@ capture was not aborted."
   \\(\\[\\sw\\\\\\]\\|\\s_\\)+:") 0)
      indentation))
 
+  :config
   (advice-add 'asm-calculate-indentation :filter-return #'dd/asm-calculate-indentation))
 
 (use-package cider
