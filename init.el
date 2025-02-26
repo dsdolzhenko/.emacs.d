@@ -190,12 +190,6 @@ The DWIM behaviour of this command is as follows:
 (setq kept-old-versions 2)   ;; Number of oldest versions to keep.
 (setq version-control t)     ;; Use version numbers for backups.
 
-;; Hide auto-revert mode from modeline
-(use-package autorevert
-  :diminish auto-revert-mode
-  :after global-auto-revert-mode)
-
-
 ;;;; Buffers
 
 ;; Shortcut to kill the current buffer.
