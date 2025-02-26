@@ -964,7 +964,6 @@ capture was not aborted."
   :defer t)
 
 (use-package treesit
-  :mode (("\\.tsx\\'" . tsx-ts-mode))
   :preface
   (defun dd/setup-install-grammars ()
     "Install Tree-sitter grammars if they are absent."
@@ -996,14 +995,22 @@ capture was not aborted."
   (dolist (mapping
            '((python-mode . python-ts-mode)
              (css-mode . css-ts-mode)
-             (js2-mode . js-ts-mode)
-             (bash-mode . bash-ts-mode)
+             (js-mode . js-ts-mode)
+             (sh-mode . bash-ts-mode)
              (conf-toml-mode . toml-ts-mode)
              (go-mode . go-ts-mode)
              (css-mode . css-ts-mode)
              (json-mode . json-ts-mode)
              (js-json-mode . json-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
+  :mode (("\\.tsx\\'" . tsx-ts-mode)
+         ("\\.js\\'"  . typescript-ts-mode)
+         ("\\.mjs\\'" . typescript-ts-mode)
+         ("\\.mts\\'" . typescript-ts-mode)
+         ("\\.cjs\\'" . typescript-ts-mode)
+         ("\\.ts\\'"  . typescript-ts-mode)
+         ("\\.jsx\\'" . tsx-ts-mode)
+         ("\\.json\\'" .  json-ts-mode))
   :config
   (dd/setup-install-grammars))
 
