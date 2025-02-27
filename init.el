@@ -125,7 +125,6 @@ The DWIM behaviour of this command is as follows:
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 (use-package editorconfig
-  :ensure t
   :defer t
   :hook (prog-mode . editorconfig-mode))
 
