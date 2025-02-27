@@ -393,6 +393,14 @@ The DWIM behaviour of this command is as follows:
          ("C-c D" . crux-delete-file-and-buffer)
          ("C-c d" . crux-duplicate-current-line-or-region)))
 
+;;; Rg
+
+(use-package rg
+  :ensure t
+  :bind ("C-c s b" . rg)
+  :custom
+  (rg-command-line-args '("-B 3" "-A 3")))
+
 ;;; Projectile
 
 (use-package projectile
