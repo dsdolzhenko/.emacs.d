@@ -209,6 +209,8 @@ The DWIM behaviour of this command is as follows:
 ;; Display the key bindings following the currently entered
 ;; incomplete command (a prefix) in a popup
 (use-package which-key
+  :custom
+  (which-key-max-description-length 60)
   :config (which-key-mode))
 
 ;;; Look and feel
