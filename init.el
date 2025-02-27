@@ -209,7 +209,7 @@ The DWIM behaviour of this command is as follows:
 ;; incomplete command (a prefix) in a popup
 (use-package which-key
   :custom
-  (which-key-max-description-length 60)
+  (which-key-max-description-length nil)
   :config (which-key-mode))
 
 ;;; Look and feel
