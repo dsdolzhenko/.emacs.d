@@ -491,7 +491,7 @@ capture was not aborted."
   ;; Capture the new task, creating the project file if necessary
   (org-roam-capture- :node (org-roam-node-read
                             nil
-                            (dd/org-roam-filter-by-tag "project"))
+                            (dd/org-roam-filter-by-tag "agenda"))
                      :templates `(("p" "project" plain ,(concat "** TODO %?\n"
                                                                 "/Entered on/ %U")
                                    :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
