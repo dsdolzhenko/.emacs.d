@@ -264,6 +264,13 @@ The DWIM behaviour of this command is as follows:
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
+(use-package wgrep
+  :custom
+  (wgrep-enable-key "e")
+  :bind
+  (:map grep-mode-map
+        ("e" . #'wgrep-change-to-wgrep-mode)))
+
 ;;; Look and feel
 
 ;; Set the fringe a little wider to ensure the text isn’t too close to the frame borders
