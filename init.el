@@ -45,6 +45,8 @@
 (use-package exec-path-from-shell
   :ensure t
   :config
+  (dolist (var '("JAVA_HOME"))
+    (add-to-list 'exec-path-from-shell-variables var))
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
