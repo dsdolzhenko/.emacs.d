@@ -906,7 +906,13 @@ capture was not aborted."
 
 (use-package cider
   :ensure t
-  :defer t)
+  :defer t
+  :commands (cider)
+  :custom
+   ;; Controls whether to pop to the REPL buffer on connect.
+  (cider-repl-pop-to-buffer-on-connect nil)
+  ;; Don't select the error buffer when it's displayed:
+  (cider-auto-select-error-buffer nil))
 
 ;;; Assembler
 
