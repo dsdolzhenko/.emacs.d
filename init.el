@@ -406,6 +406,18 @@ The DWIM behaviour of this command is as follows:
 (use-package vterm
   :ensure t
   :defer t
+  :preface
+  (defun dd/vterm-in-side-window (&optional arg)
+    (interactive "P")
+    (let ((display-buffer-alist '(("\\*\\vterm.*\\*"
+                                   display-buffer-in-side-window
+                                   (side . bottom) (slot . -1)
+                                   (preserve-size . (nil . t))))))
+      (vterm arg)))
+  :custom
+  (vterm-kill-buffer-on-exit t)
+  :bind (("C-c v" . vterm)
+         ("C-|" . dd/vterm-in-side-window))
   :hook
   ;; A hack to avoid flickering
   ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
