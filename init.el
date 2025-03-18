@@ -422,7 +422,9 @@ The DWIM behaviour of this command is as follows:
   ;; A hack to avoid flickering
   ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
   (vterm-mode . (lambda () (setq-local global-hl-line-mode nil)))
-  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode))))
+  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode)))
+  :config
+  (add-to-list #'vterm-eval-cmds '("dired" dired)))
 
 ;;; Crux
 
