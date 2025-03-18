@@ -401,6 +401,17 @@ The DWIM behaviour of this command is as follows:
               (window-width . fit-window-to-buffer)
               (preserve-size . (t . nil))))))
 
+;;; vterm
+
+(use-package vterm
+  :ensure t
+  :defer t
+  :hook
+  ;; A hack to avoid flickering
+  ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
+  (vterm-mode . (lambda () (setq-local global-hl-line-mode nil)))
+  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode))))
+
 ;;; Crux
 
 (use-package crux
