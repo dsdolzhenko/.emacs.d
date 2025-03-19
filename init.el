@@ -406,25 +406,21 @@ The DWIM behaviour of this command is as follows:
 (use-package vterm
   :ensure t
   :defer t
-  :preface
-  (defun dd/vterm-in-side-window (&optional arg)
-    (interactive "P")
-    (let ((display-buffer-alist '(("\\*\\vterm.*\\*"
-                                   display-buffer-in-side-window
-                                   (side . bottom) (slot . -1)
-                                   (preserve-size . (nil . t))))))
-      (vterm arg)))
   :custom
   (vterm-kill-buffer-on-exit t)
-  :bind (("C-c v" . vterm)
-         ("C-|" . dd/vterm-in-side-window))
+  (vterm-ignore-blink-cursor t)
+  ;; Commands used by https://github.com/pymander/vfish
+  (vterm-eval-cmds '(("find-file" find-file)
+                     ("message" message)
+                     ("vterm-clear-scrollback" vterm-clear-scrollback)
+                     ("dired" dired)
+                     ("ediff-files" ediff-files)))
+  :bind (("C-c v" . vterm-other-window))
   :hook
   ;; A hack to avoid flickering
   ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
   (vterm-mode . (lambda () (setq-local global-hl-line-mode nil)))
-  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode)))
-  :config
-  (add-to-list #'vterm-eval-cmds '("dired" dired)))
+  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode))))
 
 ;;; Crux
 
