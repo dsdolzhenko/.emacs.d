@@ -422,6 +422,13 @@ The DWIM behaviour of this command is as follows:
   (vterm-mode . (lambda () (setq-local global-hl-line-mode nil)))
   (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode))))
 
+(use-package with-editor
+  :ensure t
+  :defer t
+  :after (vterm)
+  :config
+  (add-hook 'vterm-mode-hook 'with-editor-export-editor))
+
 ;;; Crux
 
 (use-package crux
