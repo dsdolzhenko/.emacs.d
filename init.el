@@ -695,10 +695,10 @@ capture was not aborted."
   (org-directory "~/Documents/org")
 
   ;; Agenda
-  (org-agenda-prefix-format '((agenda . "  %-12c")
-                              (todo   . "  %-12:c %-4e")
-                              (tags   . "  %-12:c")
-                              (search . "  %-12:c")))
+  (org-agenda-prefix-format '((agenda . "%-14:c")
+                              (todo   . "%-14:c %-4e")
+                              (tags   . "%-14:c")
+                              (search . "%-14:c")))
   (org-agenda-window-setup 'current-window)
 
   (org-agenda-remove-tags t)
@@ -711,28 +711,28 @@ capture was not aborted."
                  '(org-agenda-skip-entry-if 'deadline))
                 (org-deadline-warning-days 0)))
        (tags-todo "inbox"
-                  ((org-agenda-prefix-format "  %?-12t% s")
+                  ((org-agenda-prefix-format "%-14 s")
                    (org-agenda-overriding-header "\nInbox\n")))
        (todo "NEXT"
              ((org-agenda-skip-function
                '(org-agenda-skip-entry-if 'deadline))
-              (org-agenda-prefix-format "  %-12:c ")
+              (org-agenda-prefix-format "%-14:c")
               (org-agenda-overriding-header "\nNext tasks\n")))
        (todo "HOLD"
              ((org-agenda-skip-function
                '(org-agenda-skip-entry-if 'deadline))
-              (org-agenda-prefix-format "  %-12:c ")
+              (org-agenda-prefix-format "%-14:c")
               (org-agenda-overriding-header "\nTasks on hold\n")))
        (agenda nil
                ((org-agenda-entry-types '(:deadline))
                 ;; (org-agenda-format-date "")
-                (org-agenda-prefix-format "  %-12:c ")
+                (org-agenda-prefix-format "%-14:c")
                 (org-deadline-warning-days 7)
                 (org-agenda-skip-function
                  '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
                 (org-agenda-overriding-header "\nDeadlines")))
        (tags "CLOSED>=\"<today>\""
-             ((org-agenda-prefix-format "  %-12:c ")
+             ((org-agenda-prefix-format "%-14:c")
               (org-agenda-overriding-header "\nCompleted today\n")))
        (agenda "CLOSED>=\"<-1w>\""
                ((org-agenda-entry-types '(:closed))
