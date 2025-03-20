@@ -406,6 +406,7 @@ The DWIM behaviour of this command is as follows:
 (use-package vterm
   :ensure t
   :defer t
+  :commands (vterm vterm-other-window)
   :custom
   (vterm-kill-buffer-on-exit t)
   (vterm-ignore-blink-cursor t)
