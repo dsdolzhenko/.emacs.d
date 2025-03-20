@@ -475,10 +475,6 @@ The DWIM behaviour of this command is as follows:
            (dd/org-roam-filter-by-tag tag-name)
            (org-roam-node-list))))
 
-(defun dd/org-roam-refresh-agenda-list ()
-  (interactive)
-  (setq org-agenda-files (dd/org-roam-list-notes-by-tag "agenda")))
-
 (defun dd/org-roam-capture-inbox ()
   (interactive)
   (org-roam-capture- :node (org-roam-node-create)
@@ -549,9 +545,7 @@ capture was not aborted."
         (unless (string-equal old-filename new-filename)
           (rename-file old-filename new-filename)
           (set-visited-file-name new-filename)
-          (save-buffer)
-          (dd/org-roam-refresh-agenda-list))))))
-
+          (save-buffer))))))
 
 (use-package org-roam
   :ensure t
@@ -598,8 +592,7 @@ capture was not aborted."
   (org-roam-find-file-hook . (lambda () (add-hook 'after-save-hook #'dd/org-roam-update-filename-on-title-change nil t)))
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (org-roam-db-autosync-enable)
-  (dd/org-roam-refresh-agenda-list))
+  (org-roam-db-autosync-enable))
 
 (use-package ht
   :ensure t)
@@ -694,7 +687,86 @@ capture was not aborted."
 
   (org-directory "~/Documents/org")
 
-  ;; Agenda
+  ;; Hide blocks and drawers by default
+  (org-hide-block-startup t)
+  (org-hide-drawer-startup t)
+
+  ;; Align tags
+  (org-tags-column 0)
+
+  ;; Open image attachments in the default app
+  (org-file-apps '((auto-mode . emacs)
+                   (directory . emacs)
+                   ("\\.mm\\'" . default)
+                   ("\\.x?html?\\'" . default)
+                   ("\\.pdf\\'" . default)
+                   ("\\.png\\'" . default)
+                   ("\\.jpe?g\\'" . default)))
+
+  (org-id-link-to-org-use-id 'use-existing)
+
+  (org-refile-use-outline-path 'file)
+  (org-outline-path-complete-in-steps nil)
+
+  (org-log-done 'time)
+  (org-archive-subtree-save-file-p t)
+
+  (org-startup-folded 'content)
+
+  :bind
+  ("C-x n t" . org-toggle-narrow-to-subtree)
+
+  :hook
+  (org-mode . org-indent-mode)
+
+  :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (mermaid . t))))
+
+(use-package org-indent
+  :defer t)
+
+(use-package simple
+  :defer t)
+
+;; Wrap lines at fill-column in org-mode
+(use-package visual-fill-column
+  :ensure t
+  :defer t
+  :custom (fill-column 110)
+  :hook
+  (org-mode . visual-line-mode)
+  (org-mode . visual-fill-column-mode))
+
+;; Capture links to resources in other apps, such as Mail, Firefox, etc.
+(use-package org-mac-link
+  :load-path "contrib/"
+  :defer t
+  :after org
+  :bind ("C-c g" . org-mac-link-get-link))
+
+;; Handy utility to capture attachments from clipboard
+(use-package org-download
+  :ensure t
+  :defer t
+  :after org
+  :custom (org-download-method 'attach))
+
+;;; Agenda & GTD
+
+(use-package org
+  :preface
+  (defun dd/org-agenda (&optional arg)
+    (interactive)
+    (require 'org-roam)
+    (let ((org-agenda-files (dd/org-roam-list-notes-by-tag "agenda")))
+      (org-agenda arg)))
+
+  :custom
+  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "DELEGATED(f)" "CANCELED(c)")))
+
   (org-agenda-prefix-format '((agenda . "%-14:c")
                               (todo   . "%-14:c %-4e")
                               (tags   . "%-14:c")
@@ -738,75 +810,8 @@ capture was not aborted."
                ((org-agenda-entry-types '(:closed))
                 (org-agenda-overriding-header "\nCompleted this week\n")))))))
 
-  ;; Hide blocks and drawers by default
-  (org-hide-block-startup t)
-  (org-hide-drawer-startup t)
-
-  ;; Align tags
-  (org-tags-column 0)
-
-  ;; Open image attachments in the default app
-  (org-file-apps '((auto-mode . emacs)
-                   (directory . emacs)
-                   ("\\.mm\\'" . default)
-                   ("\\.x?html?\\'" . default)
-                   ("\\.pdf\\'" . default)
-                   ("\\.png\\'" . default)
-                   ("\\.jpe?g\\'" . default)))
-
-  (org-id-link-to-org-use-id 'use-existing)
-
-  (org-refile-use-outline-path 'file)
-  (org-outline-path-complete-in-steps nil)
-
-  (org-log-done 'time)
-  (org-archive-subtree-save-file-p t)
-
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "DELEGATED(f)" "CANCELED(c)")))
-
-  (org-startup-folded 'content)
-
   :bind
-  ("C-c a" . org-agenda)
-  ("C-x n t" . org-toggle-narrow-to-subtree)
-
-  :hook
-  (org-mode . org-indent-mode)
-
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell . t)
-     (mermaid . t))))
-
-(use-package org-indent
-  :defer t)
-
-(use-package simple
-  :defer t)
-
-;; Wrap lines at fill-column in org-mode
-(use-package visual-fill-column
-  :ensure t
-  :defer t
-  :custom (fill-column 110)
-  :hook
-  (org-mode . visual-line-mode)
-  (org-mode . visual-fill-column-mode))
-
-;; Capture links to resources in other apps, such as Mail, Firefox, etc.
-(use-package org-mac-link
-  :load-path "contrib/"
-  :defer t
-  :after org
-  :bind ("C-c g" . org-mac-link-get-link))
-
-;; Handy utility to capture attachments from clipboard
-(use-package org-download
-  :ensure t
-  :defer t
-  :after org
-  :custom (org-download-method 'attach))
+  ("C-c a" . dd/org-agenda))
 
 ;;; Mail
 
