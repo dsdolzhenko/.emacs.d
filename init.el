@@ -988,6 +988,8 @@ capture was not aborted."
 
 (use-package web-mode
   :ensure t
+  :custom
+  (web-mode-enable-front-matter-block t)
   :mode (("\\.html\\'" . web-mode)
          ("\\.njk\\'" . web-mode)
          ("\\.liquid\\'" . web-mode)))
