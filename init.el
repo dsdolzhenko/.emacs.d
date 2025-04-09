@@ -401,6 +401,11 @@ The DWIM behaviour of this command is as follows:
               (window-width . fit-window-to-buffer)
               (preserve-size . (t . nil))))))
 
+;;; Compilation
+
+(use-package compile
+  :custom (compilation-scroll-output t))
+
 ;;; vterm
 
 (use-package vterm
