@@ -653,10 +653,11 @@ capture was not aborted."
 ;; Setup ~denote~ for note taking
 (use-package denote
   :ensure t
-  :hook (dired-mode . denote-dired-mode)
-  :config
-  (require 'denote-journal-extras)
-  (setq denote-journal-extras-title-format 'day-date-month-year))
+  :hook (dired-mode . denote-dired-mode))
+
+(use-package denote-journal
+  :ensure t
+  :custom (denote-journal-title-format 'day-date-month-year))
 
 (use-package consult-denote
   :ensure t)
