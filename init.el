@@ -421,7 +421,8 @@ The DWIM behaviour of this command is as follows:
                      ("vterm-clear-scrollback" vterm-clear-scrollback)
                      ("dired" dired)
                      ("ediff-files" ediff-files)))
-  :bind (("C-c v" . vterm-other-window))
+  :bind (("C-c v" . vterm)
+         ("C-c V" . vterm-other-window))
   :hook
   ;; A hack to avoid flickering
   ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
