@@ -1012,6 +1012,11 @@ capture was not aborted."
   :ensure t
   :defer t)
 
+;;; Python
+
+(use-package pyvenv
+  :ensure t)
+
 ;;; YAML
 
 (use-package yaml-mode
