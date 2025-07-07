@@ -860,6 +860,7 @@ capture was not aborted."
   :custom
   (gptel-default-mode 'org-mode)
   (gptel-expert-commands t)
+  (gptel-model 'claude-3-7-sonnet-20250219)
   :bind
   (("C-c b s" . gptel-send)
    ("C-c b m" . gptel-menu)
