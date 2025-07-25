@@ -390,6 +390,12 @@ The DWIM behaviour of this command is as follows:
 (use-package dired-filter
   :ensure t)
 
+(use-package dired-preview
+  :ensure t
+  :defer t
+  :custom (dired-preview-delay 0)
+  :commands (dired-preview-mode))
+
 (use-package consult-dir
   :ensure t
   :bind (("C-x C-d" . consult-dir)
