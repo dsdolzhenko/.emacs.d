@@ -570,6 +570,8 @@ conforms with `denote-silo-path-is-silo-p'."
   (org-hide-block-startup t)
   (org-hide-drawer-startup t)
 
+  (org-use-speed-commands t)
+
   ;; Align tags
   (org-tags-column 0)
 
