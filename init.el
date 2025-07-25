@@ -159,6 +159,12 @@ The DWIM behaviour of this command is as follows:
 
 (global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
 
+(defun dd/kill-buffer-file-name ()
+  (interactive)
+  (kill-new buffer-file-name))
+
+(global-set-key (kbd "C-c w") 'dd/kill-buffer-file-name)
+
 ;;; Minibuffer
 
 ;; Always use short variant of yes-or-no dialog
