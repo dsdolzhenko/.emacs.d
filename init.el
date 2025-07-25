@@ -462,202 +462,68 @@ The DWIM behaviour of this command is as follows:
   ;; which doesn't work with non-file buffers, such as magit-*.
   (window-configuration-change . projectile-update-mode-line))
 
-;;; Roam
-
-(defun dd/org-roam-filter-by-tag (tag-name)
-  (lambda (node)
-    (member tag-name (org-roam-node-tags node))))
-
-(defun dd/org-roam-list-notes-by-tag (tag-name)
-  (mapcar #'org-roam-node-file
-          (seq-filter
-           (dd/org-roam-filter-by-tag tag-name)
-           (org-roam-node-list))))
-
-(defun dd/org-roam-capture-inbox ()
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("i" "inbox" plain "* %?\n/Entered on/ %U"
-                                   :if-new (file+head "inbox.org" "#+TITLE: Inbox\n")))))
-
-(defun dd/org-roam-project-finalize-hook ()
-  "Adds the captured project file to `org-agenda-files' if the
-capture was not aborted."
-  ;; Remove the hook since it was added temporarily
-  (remove-hook 'org-capture-after-finalize-hook #'dd/org-roam-project-finalize-hook)
-
-  ;; Add project file to the agenda list if the capture was confirmed
-  (unless org-note-abort
-    (with-current-buffer (org-capture-get :buffer)
-      (add-to-list 'org-agenda-files (buffer-file-name)))))
-
-(defun dd/org-roam-find-project ()
-  (interactive)
-  ;; Add the project file to the agenda after capture is finished
-  (add-hook 'org-capture-after-finalize-hook #'dd/org-roam-project-finalize-hook)
-
-  ;; Select a project file to open, creating it if necessary
-  (org-roam-node-find
-   nil
-   nil
-   (dd/org-roam-filter-by-tag "project")
-   nil
-   :templates
-   '(("p" "project" plain (file "~/Documents/roam/templates/project.org")
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "")
-      :unnarrowed t))))
-
-(defun dd/org-roam-capture-task ()
-  (interactive)
-  ;; Add the project file to the agenda after capture is finished
-  (add-hook 'org-capture-after-finalize-hook #'dd/org-roam-project-finalize-hook)
-
-  ;; Capture the new task, creating the project file if necessary
-  (org-roam-capture- :node (org-roam-node-read
-                            nil
-                            (dd/org-roam-filter-by-tag "agenda"))
-                     :templates `(("p" "project" plain ,(concat "** TODO %?\n"
-                                                                "/Entered on/ %U")
-                                   :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
-                                                          "#+TITLE: ${title}\n#+CATEGORY: ${title}\n#+FILETAGS: :project:\n"
-                                                          ("Tasks"))))))
-
-(defun dd/org-roam-update-filename-on-title-change ()
-  "Update filename when the title of an org-roam buffer changes."
-  (let* ((old-filename (buffer-file-name))
-         ;; Check if the node is daily note
-         (is-not-daily (not (org-roam-dailies--daily-note-p)))
-         ;; Check if filename matches the pattern of regular org-roam nodes
-         (is-matching-file (string-match "^[0-9]\\{14\\}-.*\\.org$"
-                                         (file-name-nondirectory old-filename))))
-    ;; Update org-roam cache
-    (org-roam-db-update-file old-filename)
-    (when (and is-not-daily is-matching-file)
-      (let* ((node (org-roam-node-at-point))
-             (slug (org-roam-node-slug node))
-             ;; Extract the timestamp from the current filename
-             (timestamp (when (string-match "\\([0-9]\\{14\\}\\)" old-filename)
-                          (match-string 1 old-filename)))
-             (new-filename (expand-file-name
-                            (concat (file-name-directory old-filename)
-                                    timestamp "-" slug ".org"))))
-        (unless (string-equal old-filename new-filename)
-          (rename-file old-filename new-filename)
-          (set-visited-file-name new-filename)
-          (save-buffer))))))
-
-(use-package org-roam
-  :ensure t
-  :defer t
-  :custom
-  (org-roam-directory "~/Documents/roam")
-  (org-roam-node-display-template
-   (concat "${title:*} "
-           (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-dailies-directory "journal/")
-  (org-roam-dailies-capture-templates
-   '(("d" "Default" entry "* %?\n/Entered on/ %U" :target
-      (file+head "%<%Y-%m-%d>.org" "#+TITLE: %<%Y-%m-%d>\n#+FILETAGS: :journal:\n\n"))))
-  (org-roam-capture-templates
-   '(("d" "Default" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n\n")
-      :unnarrowed t)
-     ("t" "Topic" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n#+FILETAGS: :topic:\n\n"))
-     ("c" "Person" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n#+FILETAGS: :person:\n\n"))
-     ("d" "Team" plain
-      "%?"
-      :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+TITLE: ${title}\n#+FILETAGS: :team:\n\n"))))
-  (org-roam-completion-everywhere t)
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n o" . org-roam-node-open)
-         ("C-c n p" . dd/org-roam-find-project)
-         ("C-c n c" . dd/org-roam-capture-inbox)
-         ("C-c n t" . dd/org-roam-capture-task)
-         :map org-mode-map
-         ("C-M-i" . completion-at-point)
-         :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :hook
-  (org-roam-find-file-hook . (lambda () (add-hook 'after-save-hook #'dd/org-roam-update-filename-on-title-change nil t)))
-  :config
-  (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (org-roam-db-autosync-enable))
-
-(use-package ht
-  :ensure t)
-
-(use-package org-roam-dblocks
-  :after org
-  :load-path "contrib/chrisbarrett-nursery/lisp/"
-  :hook (org-mode . org-roam-dblocks-autoupdate-mode))
-
-(use-package org-drill
-  :ensure t
-  :defer t
-  :after org)
-
-(use-package ts
-  :ensure t
-  :defer t)
-
-(use-package org-roam-review
-  :after org
-  :load-path "contrib/chrisbarrett-nursery/lisp/"
-  :defer t
-  :hook (org-roam-capture-new-node . org-roam-review-set-seedling)
-  :commands (org-roam-review
-             org-roam-review-list-by-maturity
-             org-roam-review-list-recently-added
-             org-roam-review-set-seedling
-             org-roam-review-set-evergreen))
-
-(use-package consult-org-roam
-  :ensure t
-  :after org-roam
-  :init
-  (require 'consult-org-roam)
-  ;; Activate the minor mode
-  (consult-org-roam-mode 1)
-  :custom
-  ;; Use `ripgrep' for searching with `consult-org-roam-search'
-  (consult-org-roam-grep-func #'consult-ripgrep)
-  ;; Configure a custom narrow key for `consult-buffer'
-  (consult-org-roam-buffer-narrow-key ?r)
-  ;; Display org-roam buffers right after non-org-roam buffers
-  ;; in consult-buffer (and not down at the bottom)
-  (consult-org-roam-buffer-after-buffers t)
-  :config
-  ;; Eventually suppress previewing for certain functions
-  (consult-customize
-   consult-org-roam-forward-links
-   :preview-key "M-.")
-  :bind
-  ;; Define some convenient keybindings as an addition
-  ("C-c n e" . consult-org-roam-file-find)
-  ("C-c n b" . consult-org-roam-backlinks)
-  ("C-c n B" . consult-org-roam-backlinks-recursive)
-  ("C-c n l" . consult-org-roam-forward-links)
-  ("C-c n r" . consult-org-roam-search))
-
 ;;; Denote
 
-;; Setup ~denote~ for note taking
+(defun dd/denote-rename-on-save-using-front-matter ()
+  "Rename the current Denote file, if needed, upon saving the file.
+Rename the file based on its front matter, checking for changes in the
+title or keywords fields.
+
+Add this function to the `after-save-hook'."
+  (let ((denote-rename-confirmations nil)
+        (denote-save-buffers t)) ; to save again post-rename
+    (when (and buffer-file-name (denote-file-is-note-p buffer-file-name))
+      (ignore-errors (denote-rename-file-using-front-matter buffer-file-name))
+      (message "Buffer saved; Denote file renamed"))))
+
 (use-package denote
   :ensure t
-  :hook (dired-mode . denote-dired-mode))
+  :custom
+  (denote-file-type 'org)
+  (denote-prompts '(title keywords))
+  :hook
+  (dired-mode . denote-dired-mode)
+  (after-save . dd/denote-rename-on-save-using-front-matter)
+  :config
+  (denote-rename-buffer-mode)
+  (put 'denote-file-type 'safe-local-variable 'symbolp))
+
+(use-package denote-org
+  :ensure t
+  :custom
+  (denote-org-store-link-to-heading 'id))
+
+(use-package denote-silo
+  :ensure t
+  :commands (denote-silo-create-note
+             denote-silo-open-or-create
+             denote-silo-select-silo-then-command
+             denote-silo-dired
+             denote-silo-cd)
+  :config
+  (setq denote-silo-directories
+        (list denote-directory
+              "~/Documents/notes/personal/"
+              "~/Documents/notes/dutch/"
+              "~/Documents/notes/work/"
+              "~/Documents/notes/recipes/")))
 
 (use-package denote-journal
   :ensure t
+  :preface
+
+  (defun dd/denote-silo-journal-new-or-existing-entry (silo)
+    "Select SILO and run `denote-journal-new-or-existing-entry' in it.
+SILO is a file path from `denote-silo-directories'.
+
+When called from Lisp, SILO is a file system path to a directory that
+conforms with `denote-silo-path-is-silo-p'."
+    (interactive (list (denote-silo-directory-prompt)))
+    (denote-silo-with-silo silo
+      (let* ((denote-directory silo)
+             (denote-journal-directory (concat denote-directory "journal")))
+        (call-interactively #'denote-journal-new-or-existing-entry))))
+
   :custom (denote-journal-title-format 'day-date-month-year))
 
 (use-package consult-denote
@@ -760,8 +626,7 @@ capture was not aborted."
   :preface
   (defun dd/org-agenda (&optional arg)
     (interactive)
-    (require 'org-roam)
-    (let ((org-agenda-files (dd/org-roam-list-notes-by-tag "agenda")))
+    (let* ((org-agenda-files (denote-directory-files "_agenda")))
       (org-agenda arg)))
 
   :custom
