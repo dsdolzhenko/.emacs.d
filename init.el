@@ -427,6 +427,7 @@ The DWIM behaviour of this command is as follows:
   :custom
   (vterm-kill-buffer-on-exit t)
   (vterm-ignore-blink-cursor t)
+  (vterm-buffer-name-string "vterm %s") ;; %s will be replaced with current directory
   ;; Commands used by https://github.com/pymander/vfish
   (vterm-eval-cmds '(("find-file" find-file)
                      ("message" message)
