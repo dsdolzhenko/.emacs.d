@@ -737,25 +737,25 @@ conforms with `denote-silo-path-is-silo-p'."
 
 (use-package gptel
   :ensure t
-  :defer t
-  :preface
-  (defun dd/gptel-api-key (host)
-    (let ((auth (car (auth-source-search :host host))))
-      (when auth
-        (plist-get auth :secret))))
   :custom
   (gptel-default-mode 'org-mode)
   (gptel-expert-commands t)
-  (gptel-model 'claude-3-7-sonnet-20250219)
+  (gptel-cache t)
+  (gptel-directives
+   '((rewrite . gptel--rewrite-directive-default)
+     (default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely.")
+     (programming . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
+     (writing . "You are a large language model and a writing assistant. Respond concisely.")
+     (chat . "You are a large language model and a conversation partner. Respond concisely.")))
   :bind
   (("C-c b s" . gptel-send)
    ("C-c b m" . gptel-menu)
-   ("C-c b r" . gptel-rewrite-menu)
-   ("C-c b a" . gptel-context-add))
+   ("C-c b r" . gptel-rewrite)
+   ("C-c b a" . gptel-context-add)
+   ("C-c b h" . gptel-org-set-topic))
   :config
-  (gptel-make-anthropic "Claude"
-    :stream t
-    :key (dd/gptel-api-key "api.anthropic.com")))
+  (gptel-make-gemini "Gemini" :key gptel-api-key :stream t)
+  (gptel-make-anthropic "Claude" :stream t :key gptel-api-key))
 
 ;;; Git
 
