@@ -771,6 +771,13 @@ conforms with `denote-silo-path-is-silo-p'."
   (magit-bury-buffer-function 'magit-restore-window-configuration)
   :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer)))
 
+(use-package consult-vc-modified-files
+  :ensure t
+  :bind
+  ;; choose any other key bindings you prefer
+  (("C-x v /" . consult-vc-modified-files)
+   ("C-x v ." . consult-vc-log-select-files)))
+
 ;;; LSP
 
 (use-package eglot
