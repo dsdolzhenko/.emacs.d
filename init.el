@@ -494,6 +494,10 @@ Add this function to the `after-save-hook'."
   :custom
   (denote-file-type 'org)
   (denote-prompts '(title keywords))
+  :bind (("C-c n n" . denote-open-or-create)
+         ("C-c n i" . denote-link-or-create)
+         ("C-c n b" . denote-backlinks)
+         ("C-c n s" . denote-silo-dired))
   :hook
   (dired-mode . denote-dired-mode)
   (after-save . dd/denote-rename-on-save-using-front-matter)
@@ -540,12 +544,13 @@ conforms with `denote-silo-path-is-silo-p'."
   :custom (denote-journal-title-format 'day-date-month-year))
 
 (use-package consult-denote
-  :ensure t)
+  :ensure t
+  :bind (("C-c n g" . consult-denote-grep)))
 
 (use-package denote-menu
   :ensure t
   :defer t
-  :bind (("C-c z" . denote-menu-list-notes)
+  :bind (("C-c n z" . denote-menu-list-notes)
          (:map denote-menu-mode-map
                ("c" . denote-menu-clear-filters)
                ("/ r" . denote-menu-filter)
