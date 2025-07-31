@@ -640,6 +640,47 @@ conforms with `denote-silo-path-is-silo-p'."
   :after org
   :custom (org-download-method 'attach))
 
+;;; Pandoc
+
+(defun dd/pandoc-convert-text (text from-format to-format)
+  "Convert TEXT from FROM-FORMAT to TO-FORMAT using pandoc."
+  (with-temp-buffer
+    (insert text)
+    (let ((exit-code (shell-command-on-region
+                      (point-min) (point-max)
+                      (format "pandoc -f %s -t %s --wrap=none" from-format to-format)
+                      t t)))
+      (if (zerop exit-code)
+          (buffer-string)
+        (error "Pandoc conversion failed with exit code %d" exit-code)))))
+
+(defun dd/org-to-markdown-clipboard (start end)
+  "Convert region from Org-mode to Markdown format and copy to clipboard using pandoc."
+  (interactive "r")
+  (let ((org-text (buffer-substring-no-properties start end)))
+    (let ((converted-text (dd/pandoc-convert-text org-text "org" "markdown")))
+      (kill-new converted-text)
+      (message "Org text converted to Markdown and copied to clipboard"))))
+
+(defun dd/markdown-to-org-region (start end)
+  "Convert region from Markdown to Org-mode format using pandoc."
+  (interactive "r")
+  (let ((markdown-text (buffer-substring-no-properties start end)))
+    (let ((converted-text (dd/pandoc-convert-text markdown-text "markdown" "org")))
+      (delete-region start end)
+      (insert converted-text)
+      (message "Markdown text converted to Org format"))))
+
+(defun dd/markdown-to-org-from-kill-ring ()
+  "Convert last kill ring item from Markdown to Org-mode format and insert at point using pandoc."
+  (interactive)
+  (let ((markdown-text (current-kill 0)))
+    (unless markdown-text
+      (error "Kill ring is empty"))
+    (let ((converted-text (dd/pandoc-convert-text markdown-text "markdown" "org")))
+      (insert converted-text)
+      (message "Markdown text from kill ring converted to Org format and inserted"))))
+
 ;;; Agenda & GTD
 
 (use-package org
