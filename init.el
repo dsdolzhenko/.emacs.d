@@ -958,6 +958,11 @@ conforms with `denote-silo-path-is-silo-p'."
   :ensure t
   :defer t)
 
+;;; CSV
+(use-package csv-mode
+  :ensure t
+  :defer t)
+
 ;;; Jinja
 
 (use-package jinja2-mode
