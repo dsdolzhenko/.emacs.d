@@ -86,6 +86,9 @@
 ;; Replace selected text by typing
 (delete-selection-mode t)
 
+;; Enable narrow-to-region command
+(put 'narrow-to-region 'disabled nil)
+
 (defun dd/keyboard-quit-dwim ()
   "Do-What-I-Mean behaviour for a general `keyboard-quit'.
 
