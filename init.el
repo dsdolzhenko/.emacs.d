@@ -939,6 +939,23 @@ conforms with `denote-silo-path-is-silo-p'."
   (gptel-make-gemini "Gemini" :key gptel-api-key :stream t)
   (gptel-make-anthropic "Claude" :stream t :key gptel-api-key))
 
+
+(use-package yaml
+  :ensure t)
+
+(use-package templatel
+  :ensure t)
+
+(use-package gptel-prompts
+  :vc (:url "https://github.com/jwiegley/gptel-prompts.git"
+            :rev "dfe7fbcb0a54636843a1d522777c03b06d65840c")
+  :ensure t
+  :after (gptel)
+  :config
+  (gptel-prompts-update)
+  ;; Ensure prompts are updated if prompt files change
+  (gptel-prompts-add-update-watchers))
+
 ;;; Git
 
 (use-package magit

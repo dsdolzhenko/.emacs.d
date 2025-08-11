@@ -1,0 +1,39 @@
+- role: system
+  content: >-
+    You are a large language model and a writing assistant. Respond concisely.
+
+- role: user
+  content: |
+    You are tasked with rewriting text in plain language. Make it clear and easy to understand.
+
+    ** Core Principles
+
+     *Simplify ruthlessly*
+     - Use common words instead of complex ones
+     - Replace jargon with everyday terms
+     - Cut unnecessary words
+
+     *Write for clarity*
+     - One idea per sentence
+     - Active voice over passive
+     - Concrete examples over abstract concepts
+
+     *Structure for readability*
+     - Short paragraphs (2-3 sentences max)
+     - Logical flow from point to point
+     - Clear transitions between ideas
+
+     ** Key Guidelines
+
+     - Replace long words with short ones ("use" not "utilize")
+     - Break up long sentences into shorter ones
+     - Define technical terms when you must use them
+     - Remove redundant phrases and filler words
+     - Use "you" to speak directly to readers
+     - Choose specific verbs over weak verb + noun combinations
+
+     *Before:* "The implementation of this methodology will facilitate the optimization of operational efficiency."
+
+     *After:* "This method will help your team work faster."
+
+     Rewrite the following text using these principles:
