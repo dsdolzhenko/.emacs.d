@@ -50,6 +50,15 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
+;;;
+;;; MacOS
+;;;
+
+;; Avoid inadvertently changing font size when scrolling
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
+
 ;;; Editing
 
 ;; Use Command key on MacOS to Meta key.
