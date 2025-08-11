@@ -739,6 +739,13 @@ conforms with `denote-silo-path-is-silo-p'."
   :bind
   ("C-c c"   . org-capture))
 
+;; Capture links to resources in other apps, such as Mail, Firefox, etc.
+(use-package org-mac-link
+  :load-path "contrib/"
+  :defer t
+  :after org
+  :bind ("C-c g" . org-mac-link-get-link))
+
 (use-package org-indent
   :defer t)
 
@@ -753,13 +760,6 @@ conforms with `denote-silo-path-is-silo-p'."
   :hook
   (org-mode . visual-line-mode)
   (org-mode . visual-fill-column-mode))
-
-;; Capture links to resources in other apps, such as Mail, Firefox, etc.
-(use-package org-mac-link
-  :load-path "contrib/"
-  :defer t
-  :after org
-  :bind ("C-c g" . org-mac-link-get-link))
 
 ;; Handy utility to capture attachments from clipboard
 (use-package org-download
