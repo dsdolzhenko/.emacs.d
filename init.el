@@ -905,6 +905,17 @@ conforms with `denote-silo-path-is-silo-p'."
 
 ;;; LLM
 
+(defun dd/gptel-quick-query ()
+  "Prompt for user input and send it to LLM in a new gptel session."
+  (interactive)
+  (let ((user-prompt (read-string "Query: "))
+        (session-name (format "*gptel-query-%s*"
+                             (format-time-string "%H%M%S"))))
+    (with-current-buffer (gptel session-name)
+      (insert user-prompt)
+      (gptel-send)
+      (switch-to-buffer-other-window (current-buffer)))))
+
 (use-package gptel
   :ensure t
   :custom
@@ -913,12 +924,13 @@ conforms with `denote-silo-path-is-silo-p'."
   (gptel-cache t)
   (gptel-directives
    '((rewrite . gptel--rewrite-directive-default)
-     (default . "You are a large language model living in Emacs and a helpful assistant. Respond concisely.")
      (programming . "You are a large language model and a careful programmer. Provide code and only code as output without any additional text, prompt or note.")
      (writing . "You are a large language model and a writing assistant. Respond concisely.")
      (chat . "You are a large language model and a conversation partner. Respond concisely.")))
   :bind
-  (("C-c b s" . gptel-send)
+  (("C-c b b". gptel)
+   ("C-c b q" . dd/gptel-quick-query)
+   ("C-c b s" . gptel-send)
    ("C-c b m" . gptel-menu)
    ("C-c b r" . gptel-rewrite)
    ("C-c b a" . gptel-context-add)
