@@ -815,7 +815,8 @@ conforms with `denote-silo-path-is-silo-p'."
   :preface
   (defun dd/org-agenda (&optional arg)
     (interactive)
-    (let* ((org-agenda-files (denote-directory-files "_agenda")))
+    (let* ((org-agenda-files (denote-directory-files "_agenda"))
+           (org-agenda-files (append org-agenda-files '("~/Documents/notes/inbox.org"))))
       (org-agenda arg)))
 
   :custom
