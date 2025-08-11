@@ -653,6 +653,40 @@ conforms with `denote-silo-path-is-silo-p'."
   :ensure t
   :bind (("C-c n g" . consult-denote-grep)))
 
+(defun dd/org-capture-project-todo-target ()
+  "Target function for capturing TODOs to project notes.
+If current buffer is a denote project note, use it.
+Otherwise, prompt for a project note using consult."
+  (let* ((current-is-project-p
+          (and buffer-file-name
+               (denote-file-is-note-p buffer-file-name)
+               (member "project" (denote-retrieve-filename-keywords-as-list buffer-file-name))))
+         (target-file
+          (if current-is-project-p
+              buffer-file-name
+            (denote-file-prompt "_project" "Select file (RET on no match to create it)" :no-require-match))))
+    (when target-file
+      (set-buffer (find-file-noselect target-file))
+
+      (unless (derived-mode-p 'org-mode)
+        (org-display-warning
+         (format "Capture requirement: switching buffer %S to Org mode"
+                 (current-buffer)))
+        (org-mode))
+
+      (let ((headline "Tasks"))
+        (org-capture-put-target-region-and-position)
+        (widen)
+        (goto-char (point-min))
+        (if (re-search-forward (format org-complex-heading-regexp-format
+                                       (regexp-quote headline))
+                               nil t)
+            (forward-line 0)
+          (goto-char (point-max))
+          (unless (bolp) (insert "\n"))
+          (insert "* " headline "\n")
+          (forward-line -1))))))
+
 (use-package denote-menu
   :ensure t
   :defer t
@@ -724,6 +758,8 @@ conforms with `denote-silo-path-is-silo-p'."
   (org-directory "~/Documents/notes")
   (org-capture-templates '(("t" "Todo" entry (file "~/Documents/notes/inbox.org")
                             "* TODO %?")
+                           ("p" "Project Todo" entry (function dd/org-capture-project-todo-target)
+                            "** TODO %?")
                            ("s" "Scratch" entry (file "~/Documents/notes/scratchpad.org")
                             "* %U"
                             :immediate-finish t
@@ -737,7 +773,7 @@ conforms with `denote-silo-path-is-silo-p'."
                                               (save-buffer)))))
 
   :bind
-  ("C-c c"   . org-capture))
+  ("C-c c"  . org-capture))
 
 ;; Capture links to resources in other apps, such as Mail, Firefox, etc.
 (use-package org-mac-link
