@@ -717,6 +717,28 @@ conforms with `denote-silo-path-is-silo-p'."
    '((shell . t)
      (mermaid . t))))
 
+;; org-capture settings
+(use-package org
+  :ensure t
+  :custom
+  (org-directory "~/Documents/notes")
+  (org-capture-templates '(("t" "Todo" entry (file "~/Documents/notes/inbox.org")
+                            "* TODO %?")
+                           ("s" "Scratch" entry (file "~/Documents/notes/scratchpad.org")
+                            "* %U"
+                            :immediate-finish t
+                            :after-finalize (lambda ()
+                                              (interactive)
+                                              (org-capture '(16))
+                                              (org-narrow-to-subtree)
+                                              (org-end-of-line)
+                                              (newline)
+                                              (bookmark-set "Scratchpad")
+                                              (save-buffer)))))
+
+  :bind
+  ("C-c c"   . org-capture))
+
 (use-package org-indent
   :defer t)
 
