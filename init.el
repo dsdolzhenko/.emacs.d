@@ -653,40 +653,6 @@ conforms with `denote-silo-path-is-silo-p'."
   :ensure t
   :bind (("C-c n g" . consult-denote-grep)))
 
-(defun dd/org-capture-project-todo-target ()
-  "Target function for capturing TODOs to project notes.
-If current buffer is a denote project note, use it.
-Otherwise, prompt for a project note using consult."
-  (let* ((current-is-project-p
-          (and buffer-file-name
-               (denote-file-is-note-p buffer-file-name)
-               (member "project" (denote-retrieve-filename-keywords-as-list buffer-file-name))))
-         (target-file
-          (if current-is-project-p
-              buffer-file-name
-            (denote-file-prompt "_project" "Select file (RET on no match to create it)" :no-require-match))))
-    (when target-file
-      (set-buffer (find-file-noselect target-file))
-
-      (unless (derived-mode-p 'org-mode)
-        (org-display-warning
-         (format "Capture requirement: switching buffer %S to Org mode"
-                 (current-buffer)))
-        (org-mode))
-
-      (let ((headline "Tasks"))
-        (org-capture-put-target-region-and-position)
-        (widen)
-        (goto-char (point-min))
-        (if (re-search-forward (format org-complex-heading-regexp-format
-                                       (regexp-quote headline))
-                               nil t)
-            (forward-line 0)
-          (goto-char (point-max))
-          (unless (bolp) (insert "\n"))
-          (insert "* " headline "\n")
-          (forward-line -1))))))
-
 (use-package denote-menu
   :ensure t
   :defer t
@@ -751,14 +717,80 @@ Otherwise, prompt for a project note using consult."
    '((shell . t)
      (mermaid . t))))
 
-;; org-capture settings
+;;; org-capture
+
+(defun dd/org-capture-denote-note-target ()
+  "Target function for capturing TODOs to project notes.
+If current buffer is a denote project note, use it.
+Otherwise, prompt for a project note using consult."
+  (let* ((current-is-project-p
+          (and buffer-file-name
+               (denote-file-is-note-p buffer-file-name)
+               (member "project" (denote-retrieve-filename-keywords-as-list buffer-file-name))))
+         (target-file
+          (if current-is-project-p
+              buffer-file-name
+            (denote-file-prompt "_agenda" "Select file to capture a task to" :no-require-match)))
+         (target-headline "Tasks"))
+    (when target-file
+      (set-buffer (find-file-noselect target-file))
+
+      (unless (derived-mode-p 'org-mode)
+        (org-display-warning
+         (format "Capture requirement: switching buffer %S to Org mode"
+                 (current-buffer)))
+        (org-mode))
+
+      (org-capture-put-target-region-and-position)
+      (widen)
+      (goto-char (point-min))
+      (if (re-search-forward (format org-complex-heading-regexp-format
+                                     (regexp-quote target-headline))
+                             nil t)
+          (forward-line 0)
+        (goto-char (point-max))
+        (unless (bolp) (insert "\n"))
+        (insert "* " target-headline "\n")
+        (forward-line -1)))))
+
+(defun dd/org-refile-todo-to-note ()
+  "Refile the current heading to a project note's Tasks section.
+Prompts for a project note using denote, creates a Tasks heading if needed."
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "This command only works in org-mode buffers"))
+
+  (let* ((target-file (denote-file-prompt "_agenda" "Select file to refile the task to" :no-require-match))
+         (target-headline "Tasks"))
+    (when target-file
+      ;; Ensure Tasks heading exists in target file
+      (with-current-buffer (find-file-noselect target-file)
+        (save-excursion
+          (goto-char (point-min))
+          (unless (re-search-forward (format org-complex-heading-regexp-format
+                                             (regexp-quote target-headline))
+                                     nil t)
+            (goto-char (point-max))
+            (unless (bolp) (insert "\n"))
+            (insert "* " target-headline "\n")
+            (save-buffer))))
+
+      ;; Set up refile targets and perform refile
+      (let ((org-refile-targets `((,target-file . (:level . 1))))
+            (org-refile-use-outline-path 'file)
+            (org-outline-path-complete-in-steps nil))
+        (org-refile nil nil
+                    (list target-headline target-file nil
+                          (with-current-buffer (find-file-noselect target-file)
+                            (org-find-exact-headline-in-buffer target-headline))))))))
+
 (use-package org
   :ensure t
   :custom
   (org-directory "~/Documents/notes")
   (org-capture-templates '(("t" "Todo" entry (file "~/Documents/notes/inbox.org")
                             "* TODO %?")
-                           ("p" "Project Todo" entry (function dd/org-capture-project-todo-target)
+                           ("n" "Denote Todo" entry (function dd/org-capture-denote-note-target)
                             "** TODO %?")
                            ("s" "Scratch" entry (file "~/Documents/notes/scratchpad.org")
                             "* %U"
@@ -774,6 +806,10 @@ Otherwise, prompt for a project note using consult."
 
   :bind
   ("C-c c"  . org-capture))
+
+(use-package denote
+  :ensure t
+  :bind (("C-c n r" . dd/org-refile-todo-to-note)))
 
 ;; Capture links to resources in other apps, such as Mail, Firefox, etc.
 (use-package org-mac-link
