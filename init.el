@@ -509,16 +509,6 @@ The DWIM behaviour of this command is as follows:
          ("C-x C-d" . consult-dir)
          ("C-x C-j" . consult-dir-jump-file)))
 
-(defun dired-default-directory-on-left ()
-  "Display `default-directory' in side window on left, hiding details."
-  (interactive)
-  (let ((buffer (dired-noselect default-directory)))
-    (with-current-buffer buffer (dired-hide-details-mode t))
-    (display-buffer-in-side-window
-     buffer `((side . left) (slot . 0)
-              (window-width . fit-window-to-buffer)
-              (preserve-size . (t . nil))))))
-
 ;;; Compilation
 
 (use-package compile
