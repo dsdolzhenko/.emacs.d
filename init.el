@@ -442,7 +442,7 @@ The DWIM behaviour of this command is as follows:
 ;; Display line numbers
 (use-package display-line-numbers
   :defer t
-  :custom (display-line-numbers-type 'visual)
+  :custom (display-line-numbers-type 't)
   :hook (prog-mode . display-line-numbers-mode))
 
 (use-package outshine
