@@ -271,6 +271,13 @@ The DWIM behaviour of this command is as follows:
 
 (global-set-key (kbd "C-c w") 'dd/kill-buffer-file-name)
 
+;; Use ibuffer instead of buffer list
+(use-package ibuffer
+  :bind
+  ("C-x C-b" . ibuffer)
+  :custom
+  (ibuffer-use-other-window t))
+
 ;;; Minibuffer
 
 ;; Always use short variant of yes-or-no dialog
