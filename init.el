@@ -144,7 +144,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package avy
   :ensure t
-  :bind (("C-:" . avy-goto-char-2)))
+  :bind (("C-'" . avy-goto-char-2)))
 
 (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
