@@ -553,7 +553,7 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind ("C-c s b" . rg)
   :custom
-  (rg-command-line-args '("-B 3" "-A 3")))
+  (rg-command-line-flags '("-B 3" "-A 3")))
 
 ;;; Projectile
 
