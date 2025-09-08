@@ -557,6 +557,15 @@ The DWIM behaviour of this command is as follows:
 
 ;;; Projectile
 
+(defun dd/projectile-ripgrep-symbol ()
+  "Search project (projectile) for the symbol at point. This could be any word or
+programming symbol, like a function or variable."
+  (interactive)
+  (let ((symbol (thing-at-point 'symbol t)))
+    (if (or (not symbol) (string-empty-p symbol))
+        (message "You point at nothing")
+      (projectile-ripgrep (string-trim symbol)))))
+
 (use-package projectile
   :ensure t
   :defer t
@@ -564,8 +573,9 @@ The DWIM behaviour of this command is as follows:
   (projectile-switch-project-action 'projectile-commander)
   :config
   (projectile-mode)
-  :bind-keymap
-  ("C-c p" . projectile-command-map)
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :bind (:map projectile-command-map
+              ("s ." . dd/projectile-ripgrep-symbol))
   :hook
   ;; Update projectile status in modeline whenever a new buffer appears.
   ;; Projectile updates its modeline status only on file with find-file-hook,
