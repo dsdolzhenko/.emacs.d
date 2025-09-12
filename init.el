@@ -1069,16 +1069,39 @@ Prompts for a project note using denote, creates a Tasks heading if needed."
 
 ;;; Auto-complete
 
-(use-package company
+(use-package corfu
   :ensure t
-  :defer t
-  :custom (company-idle-delay 0.5)
-  :hook ((prog-mode . company-mode)
-         (cider-repl-mode . company-mode))
-  :bind (:map company-active-map
-              ("C-j" . company-complete-selection)
-              ("C-n" . company-select-next)
-              ("C-p" . company-select-previous)))
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  (corfu-popupinfo-mode))
+
+(use-package cape
+  :ensure t
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-abbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
+
+;; A few more useful configurations...
+(use-package emacs
+  :custom
+  ;; TAB cycle if there are only few candidates
+  (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete)
+
+  ;; Emacs 30 and newer: Disable Ispell completion function.
+  ;; Try `cape-dict' as an alternative.
+  (text-mode-ispell-word-completion nil)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (read-extended-command-predicate #'command-completion-default-include-p))
 
 ;;; Snippets
 
