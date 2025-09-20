@@ -246,12 +246,28 @@ The DWIM behaviour of this command is as follows:
 (setq create-lockfiles nil)
 
 ;; Backup settings
-(setq backup-directory-alist '(("." . "~/.emacs.d/backup/")))
-(setq backup-by-copying t)   ;; Copy all files, don't rename them.
-(setq delete-old-versions t) ;; Don't ask to delete excess backup versions.
-(setq kept-new-versions 6)   ;; Number of newest versions to keep.
-(setq kept-old-versions 2)   ;; Number of oldest versions to keep.
-(setq version-control t)     ;; Use version numbers for backups.
+(use-package files
+  :defer t
+  :custom
+  (backup-directory-alist '(("." . "~/.emacs.d/backup/")))
+  ;; Copy all files, don't rename them.
+  (backup-by-copying t)
+  ;; Don't ask to delete excess backup versions.
+  (delete-old-versions t)
+  ;; Number of newest versions to keep.
+  (kept-new-versions 6)
+  ;; Number of oldest versions to keep.
+  (kept-old-versions 2)
+  ;; Use version numbers for backups.
+  (version-control t))
+
+;; https://sachachua.com/blog/2025/09/obscure-emacs-package-appreciation-backup-walker/
+(use-package backup-walker
+  :ensure t)
+
+(use-package tramp
+  :defer t
+  :custom (tramp-backup-directory-alist nil))
 
 ;;; Buffers
 
