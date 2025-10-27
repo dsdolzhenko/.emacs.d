@@ -901,14 +901,9 @@ Prompts for a project note using denote, creates a Tasks heading if needed."
 ;;; Agenda & GTD
 
 (use-package org
-  :preface
-  (defun dd/org-agenda (&optional arg)
-    (interactive)
-    (let* ((org-agenda-files (denote-directory-files "_agenda"))
-           (org-agenda-files (append org-agenda-files '("~/Documents/notes/inbox.org"))))
-      (org-agenda arg)))
-
   :custom
+  (org-agenda-files (append (denote-directory-files "_agenda") '("~/Documents/notes/inbox.org")))
+
   (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "DELEGATED(f)" "CANCELED(c)")))
 
   (org-agenda-prefix-format '((agenda . "%-14:c")
@@ -955,7 +950,7 @@ Prompts for a project note using denote, creates a Tasks heading if needed."
                 (org-agenda-overriding-header "\nCompleted this week\n")))))))
 
   :bind
-  ("C-c a" . dd/org-agenda))
+  ("C-c a" . org-agenda))
 
 ;;; Mail
 
