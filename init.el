@@ -643,28 +643,8 @@ Add this function to the `after-save-hook'."
   :config
   (setq denote-silo-directories
         (list denote-directory
-              "~/Documents/notes/personal/"
-              "~/Documents/notes/dutch/"
-              "~/Documents/notes/work/"
-              "~/Documents/notes/recipes/")))
-
-(use-package denote-journal
-  :ensure t
-  :preface
-
-  (defun dd/denote-silo-journal-new-or-existing-entry (silo)
-    "Select SILO and run `denote-journal-new-or-existing-entry' in it.
-SILO is a file path from `denote-silo-directories'.
-
-When called from Lisp, SILO is a file system path to a directory that
-conforms with `denote-silo-path-is-silo-p'."
-    (interactive (list (denote-silo-directory-prompt)))
-    (denote-silo-with-silo silo
-      (let* ((denote-directory silo)
-             (denote-journal-directory (concat denote-directory "journal")))
-        (call-interactively #'denote-journal-new-or-existing-entry))))
-
-  :custom (denote-journal-title-format 'day-date-month-year))
+              "~/Documents/notes/private/"
+              "~/Documents/notes/work/")))
 
 (use-package consult-denote
   :ensure t
@@ -691,8 +671,6 @@ conforms with `denote-silo-path-is-silo-p'."
 (use-package org
   :ensure t
   :custom
-
-  (org-directory "~/Documents/org")
 
   ;; Hide blocks and drawers by default
   (org-hide-block-startup t)
@@ -734,99 +712,10 @@ conforms with `denote-silo-path-is-silo-p'."
    '((shell . t)
      (mermaid . t))))
 
-;;; org-capture
-
-(defun dd/org-capture-denote-note-target ()
-  "Target function for capturing TODOs to project notes.
-If current buffer is a denote project note, use it.
-Otherwise, prompt for a project note using consult."
-  (let* ((current-is-project-p
-          (and buffer-file-name
-               (denote-file-is-note-p buffer-file-name)
-               (member "project" (denote-retrieve-filename-keywords-as-list buffer-file-name))))
-         (target-file
-          (if current-is-project-p
-              buffer-file-name
-            (denote-file-prompt "_agenda" "Select file to capture a task to" :no-require-match)))
-         (target-headline "Tasks"))
-    (when target-file
-      (set-buffer (find-file-noselect target-file))
-
-      (unless (derived-mode-p 'org-mode)
-        (org-display-warning
-         (format "Capture requirement: switching buffer %S to Org mode"
-                 (current-buffer)))
-        (org-mode))
-
-      (org-capture-put-target-region-and-position)
-      (widen)
-      (goto-char (point-min))
-      (if (re-search-forward (format org-complex-heading-regexp-format
-                                     (regexp-quote target-headline))
-                             nil t)
-          (forward-line 0)
-        (goto-char (point-max))
-        (unless (bolp) (insert "\n"))
-        (insert "* " target-headline "\n")
-        (forward-line -1)))))
-
-(defun dd/org-refile-todo-to-note ()
-  "Refile the current heading to a project note's Tasks section.
-Prompts for a project note using denote, creates a Tasks heading if needed."
-  (interactive)
-  (unless (derived-mode-p 'org-mode)
-    (user-error "This command only works in org-mode buffers"))
-
-  (let* ((target-file (denote-file-prompt "_agenda" "Select file to refile the task to" :no-require-match))
-         (target-headline "Tasks"))
-    (when target-file
-      ;; Ensure Tasks heading exists in target file
-      (with-current-buffer (find-file-noselect target-file)
-        (save-excursion
-          (goto-char (point-min))
-          (unless (re-search-forward (format org-complex-heading-regexp-format
-                                             (regexp-quote target-headline))
-                                     nil t)
-            (goto-char (point-max))
-            (unless (bolp) (insert "\n"))
-            (insert "* " target-headline "\n")
-            (save-buffer))))
-
-      ;; Set up refile targets and perform refile
-      (let ((org-refile-targets `((,target-file . (:level . 1))))
-            (org-refile-use-outline-path 'file)
-            (org-outline-path-complete-in-steps nil))
-        (org-refile nil nil
-                    (list target-headline target-file nil
-                          (with-current-buffer (find-file-noselect target-file)
-                            (org-find-exact-headline-in-buffer target-headline))))))))
-
-(use-package org
+(use-package org-contrib
   :ensure t
-  :custom
-  (org-directory "~/Documents/notes")
-  (org-capture-templates '(("t" "Todo" entry (file "~/Documents/notes/inbox.org")
-                            "* TODO %?")
-                           ("n" "Denote Todo" entry (function dd/org-capture-denote-note-target)
-                            "** TODO %?")
-                           ("s" "Scratch" entry (file "~/Documents/notes/scratchpad.org")
-                            "* %U"
-                            :immediate-finish t
-                            :after-finalize (lambda ()
-                                              (interactive)
-                                              (org-capture '(16))
-                                              (org-narrow-to-subtree)
-                                              (org-end-of-line)
-                                              (newline)
-                                              (bookmark-set "Scratchpad")
-                                              (save-buffer)))))
-
-  :bind
-  ("C-c c"  . org-capture))
-
-(use-package denote
-  :ensure t
-  :bind (("C-c n r" . dd/org-refile-todo-to-note)))
+  :after org
+  :config (require 'org-checklist))
 
 ;; Capture links to resources in other apps, such as Mail, Firefox, etc.
 (use-package org-mac-link
@@ -897,60 +786,6 @@ Prompts for a project note using denote, creates a Tasks heading if needed."
     (let ((converted-text (dd/pandoc-convert-text markdown-text "markdown" "org")))
       (insert converted-text)
       (message "Markdown text from kill ring converted to Org format and inserted"))))
-
-;;; Agenda & GTD
-
-(use-package org
-  :custom
-  (org-agenda-files (append (denote-directory-files "_agenda") '("~/Documents/notes/inbox.org")))
-
-  (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)" "DELEGATED(f)" "CANCELED(c)")))
-
-  (org-agenda-prefix-format '((agenda . "%-14:c")
-                              (todo   . "%-14:c %-4e")
-                              (tags   . "%-14:c")
-                              (search . "%-14:c")))
-  (org-agenda-window-setup 'current-window)
-
-  (org-agenda-remove-tags t)
-
-  (org-agenda-custom-commands
-   '(("g" "Get Things Done (GTD)"
-      ((agenda ""
-               ((org-agenda-span 1)
-                (org-agenda-skip-function
-                 '(org-agenda-skip-entry-if 'deadline))
-                (org-deadline-warning-days 0)))
-       (tags-todo "inbox"
-                  ((org-agenda-prefix-format "%-14 s")
-                   (org-agenda-overriding-header "\nInbox\n")))
-       (todo "NEXT"
-             ((org-agenda-skip-function
-               '(org-agenda-skip-entry-if 'deadline))
-              (org-agenda-prefix-format "%-14:c")
-              (org-agenda-overriding-header "\nNext tasks\n")))
-       (todo "HOLD"
-             ((org-agenda-skip-function
-               '(org-agenda-skip-entry-if 'deadline))
-              (org-agenda-prefix-format "%-14:c")
-              (org-agenda-overriding-header "\nTasks on hold\n")))
-       (agenda nil
-               ((org-agenda-entry-types '(:deadline))
-                ;; (org-agenda-format-date "")
-                (org-agenda-prefix-format "%-14:c")
-                (org-deadline-warning-days 7)
-                (org-agenda-skip-function
-                 '(org-agenda-skip-entry-if 'notregexp "\\* NEXT"))
-                (org-agenda-overriding-header "\nDeadlines")))
-       (tags "CLOSED>=\"<today>\""
-             ((org-agenda-prefix-format "%-14:c")
-              (org-agenda-overriding-header "\nCompleted today\n")))
-       (agenda "CLOSED>=\"<-1w>\""
-               ((org-agenda-entry-types '(:closed))
-                (org-agenda-overriding-header "\nCompleted this week\n")))))))
-
-  :bind
-  ("C-c a" . org-agenda))
 
 ;;; Mail
 
