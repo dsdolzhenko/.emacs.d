@@ -616,11 +616,12 @@ Add this function to the `after-save-hook'."
   :ensure t
   :custom
   (denote-file-type 'org)
-  (denote-prompts '(title keywords))
-  :bind (("C-c n n" . denote-open-or-create)
+  (denote-directory "~/Documents/notes/")
+  (denote-prompts '(subdirectory title keywords))
+  :bind (("C-c n c" . denote-create-note)
+         ("C-c n n" . denote-open-or-create)
          ("C-c n i" . denote-link-or-create)
-         ("C-c n b" . denote-backlinks)
-         ("C-c n s" . denote-silo-dired))
+         ("C-c n b" . denote-backlinks))
   :hook
   (dired-mode . denote-dired-mode)
   (after-save . dd/denote-rename-on-save-using-front-matter)
@@ -633,33 +634,20 @@ Add this function to the `after-save-hook'."
   :custom
   (denote-org-store-link-to-heading 'id))
 
-(use-package denote-silo
-  :ensure t
-  :commands (denote-silo-create-note
-             denote-silo-open-or-create
-             denote-silo-select-silo-then-command
-             denote-silo-dired
-             denote-silo-cd)
-  :config
-  (setq denote-silo-directories
-        (list denote-directory
-              "~/Documents/notes/private/"
-              "~/Documents/notes/work/")))
-
 (use-package consult-denote
   :ensure t
   :bind (("C-c n g" . consult-denote-grep)))
 
-(use-package denote-menu
+(use-package denote-journal
   :ensure t
-  :defer t
-  :bind (("C-c n z" . denote-menu-list-notes)
-         (:map denote-menu-mode-map
-               ("c" . denote-menu-clear-filters)
-               ("/ r" . denote-menu-filter)
-               ("/ k" . denote-menu-filter-by-keyword)
-               ("/ o" . denote-menu-filter-out-keyword)
-               ("e" . denote-menu-export-to-dired))))
+  :custom
+  (denote-journal-directory (expand-file-name "journal" denote-directory))
+  (denote-journal-keyword "journal")
+  (denote-journal-title-format 'day-date-month-year)
+  :commands (denote-journal-new-entry
+             denote-journal-new-or-existing-entry
+             denote-journal-link-or-create-entry)
+  :hook (calendar-mode . denote-journal-calendar-mode))
 
 ;;; Org
 
@@ -717,13 +705,6 @@ Add this function to the `after-save-hook'."
   :after org
   :config (require 'org-checklist))
 
-;; Capture links to resources in other apps, such as Mail, Firefox, etc.
-(use-package org-mac-link
-  :load-path "contrib/"
-  :defer t
-  :after org
-  :bind ("C-c g" . org-mac-link-get-link))
-
 (use-package org-indent
   :defer t)
 
@@ -745,6 +726,28 @@ Add this function to the `after-save-hook'."
   :defer t
   :after org
   :custom (org-download-method 'attach))
+
+;;; Capture
+
+;; Capture links to resources in other apps, such as Mail, Firefox, etc.
+(use-package org-mac-link
+  :load-path "contrib/"
+  :defer t
+  :after org
+  :bind ("C-c g" . org-mac-link-get-link))
+
+(use-package org-capture
+  :defer t
+  :after denote-journal
+  :bind ("C-c c" . org-capture)
+  :custom
+  (org-capture-templates '(("i" "Inbox" entry (file+headline "~/Documents/todo.org" "Inbox")
+                            "* TODO %?\n/Entered on %U/\n\n%i")
+                           ("j" "Journal" entry
+                            (file denote-journal-path-to-new-or-existing-entry)
+                            "* %U %?\n%i"
+                            :kill-buffer t
+                            :empty-lines 1))))
 
 ;;; Pandoc
 
