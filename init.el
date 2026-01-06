@@ -430,6 +430,25 @@ The DWIM behaviour of this command is as follows:
         '((fg-mode-line-active fg-main)
           ;; Make the fringe invisible
           (fringe unspecified)
+
+          ;; Faint DONE items
+          (prose-done bg-active)
+
+          ;; Don’t underline links
+          (underline-link unspecified)
+          (underline-link-visited unspecified)
+          (underline-link-symbolic unspecified)
+
+          ;; Less colorful headings
+          (fg-heading-1 fg-main)
+          (fg-heading-2 fg-main)
+          (fg-heading-3 fg-main)
+          (fg-heading-4 fg-main)
+          (fg-heading-5 fg-main)
+          (fg-heading-6 fg-main)
+          (fg-heading-7 fg-main)
+          (fg-heading-8 fg-main)
+
           (bg-line-number-inactive unspecified)
           (bg-line-number-active unspecified)))
 
