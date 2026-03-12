@@ -648,7 +648,7 @@ Add this function to the `after-save-hook'."
   :ensure t
   :custom
   (denote-file-type 'org)
-  (denote-directory "~/Documents/notes/")
+  (denote-directory "~/Documents/org/notes/")
   (denote-prompts '(subdirectory title keywords))
   :bind (("C-c n c" . denote-create-note)
          ("C-c n n" . denote-open-or-create)
