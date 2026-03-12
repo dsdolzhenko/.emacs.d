@@ -1108,6 +1108,16 @@ Add this function to the `after-save-hook'."
   :ensure t
   :defer t)
 
+;;; Kotlin
+
+(use-package kotlin-ts-mode
+  :ensure t
+  :mode (("\\.kt\\'" . kotlin-ts-mode))
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '(kotlin-ts-mode . ("~/.local/opt/kotlin-lsp/kotlin-lsp.sh" "--stdio")))))
+
 ;;; Rust
 
 (use-package rust-mode
@@ -1163,6 +1173,7 @@ Add this function to the `after-save-hook'."
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
                (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
+               (kotlin . ("https://github.com/fwcd/tree-sitter-kotlin" "main"))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
@@ -1183,6 +1194,7 @@ Add this function to the `after-save-hook'."
              (css-mode . css-ts-mode)
              (json-mode . json-ts-mode)
              (js-json-mode . json-ts-mode)))
+             (kotlin-mode . kotlin-ts-mode)
     (add-to-list 'major-mode-remap-alist mapping))
   :mode (("\\.tsx\\'" . tsx-ts-mode)
          ("\\.js\\'"  . typescript-ts-mode)
