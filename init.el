@@ -130,9 +130,11 @@ The DWIM behaviour of this command is as follows:
 ;; Enable electric quote mode for text modes
 (use-package electric
   :custom
+  (electric-quote-paragraph t)
   (electric-quote-replace-double t)
   (electric-quote-string nil)
-  :hook (text-mode . electric-quote-mode))
+  (electric-quote-context-sensitive t)
+  :config (electric-quote-mode))
 
 ;; Replace dabbrev-expand with hippie-expand
 ;; https://www.masteringemacs.org/article/text-expansion-hippie-expand
