@@ -969,6 +969,18 @@ Add this function to the `after-save-hook'."
                       :weight 'normal
                       :inherit '()))
 
+;;; Navigation
+
+(use-package expreg
+  :ensure t
+  :bind (("C-=" . expreg-expand)
+         ("C--" . expreg-contract)))
+
+;; (use-package outline
+;;   :config
+;;   (put 'outline-regexp 'safe-local-variable #'stringp)
+;;   (put 'outline-level 'safe-local-variable #'functionp))
+
 ;;; Auto-complete
 
 (use-package corfu
