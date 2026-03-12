@@ -551,6 +551,16 @@ The DWIM behaviour of this command is as follows:
   :custom (dired-preview-delay 0)
   :commands (dired-preview-mode))
 
+(use-package dired
+  :preface
+  (defun dd/dired-pbadd ()
+    (interactive)
+    (let ((files (dired-get-marked-files t current-prefix-arg nil nil t)))
+      (dired-do-shell-command "pbadd *" nil files)
+      (message "Copied %s to the system clipboard" (string-join files ", "))))
+  :bind (:map dired-mode-map
+              ("C-c C-p" . dd/dired-pbadd)))
+
 (use-package consult-dir
   :ensure t
   :bind (("C-x C-d" . consult-dir)
