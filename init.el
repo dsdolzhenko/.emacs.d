@@ -519,6 +519,13 @@ The DWIM behaviour of this command is as follows:
   ;; Save bookmarks every time the list of bookmarks changes
   (bookmark-save-flag 1))
 
+;;; TRAMP
+
+(use-package tramp
+  :config
+  (add-to-list 'backup-directory-alist
+               (cons tramp-file-name-regexp nil)))
+
 ;;; Dired
 
 ;; Display only file and directory names in dired.
