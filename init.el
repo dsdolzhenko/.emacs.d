@@ -242,6 +242,10 @@ The DWIM behaviour of this command is as follows:
 ;;  (meow-global-mode nil)
   )
 
+(use-package typo
+  :ensure t
+  :hook (text-mode . typo-mode))
+
 ;;; Backups
 
 ;; Disable lock files
