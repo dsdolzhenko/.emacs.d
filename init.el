@@ -1124,6 +1124,13 @@ Add this function to the `after-save-hook'."
   :ensure t
   :defer t)
 
+;;; Ruby
+
+(use-package ruby-ts-mode
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))))
+
 ;;; Python
 
 (use-package pyvenv
@@ -1172,8 +1179,9 @@ Add this function to the `after-save-hook'."
                (toml . ("https://github.com/tree-sitter/tree-sitter-toml" "v0.5.1"))
                (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
                (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
+               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
                (kotlin . ("https://github.com/fwcd/tree-sitter-kotlin" "main"))
+               (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby" "v0.23.1"))))
       (add-to-list 'treesit-language-source-alist grammar)
       ;; Only install `grammar' if we don't already have it
       ;; installed. However, if you want to *update* a grammar then
@@ -1193,8 +1201,9 @@ Add this function to the `after-save-hook'."
              (go-mode . go-ts-mode)
              (css-mode . css-ts-mode)
              (json-mode . json-ts-mode)
-             (js-json-mode . json-ts-mode)))
+             (js-json-mode . json-ts-mode)
              (kotlin-mode . kotlin-ts-mode)
+             (ruby-mode . ruby-ts-mode)))
     (add-to-list 'major-mode-remap-alist mapping))
   :mode (("\\.tsx\\'" . tsx-ts-mode)
          ("\\.js\\'"  . typescript-ts-mode)
@@ -1203,7 +1212,8 @@ Add this function to the `after-save-hook'."
          ("\\.cjs\\'" . typescript-ts-mode)
          ("\\.ts\\'"  . typescript-ts-mode)
          ("\\.jsx\\'" . tsx-ts-mode)
-         ("\\.json\\'" .  json-ts-mode))
+         ("\\.json\\'" .  json-ts-mode)
+         ("\\.rb\\'" . ruby-ts-mode))
   :config
   (dd/setup-install-grammars))
 
