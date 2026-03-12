@@ -1025,8 +1025,7 @@ Add this function to the `after-save-hook'."
   :hook ((emacs-lisp-mode . paredit-mode)
          (clojure-mode . paredit-mode)
          (cider-repl-mode . paredit-mode)
-         (lisp-data-mode . paredit-mode)
-         (eval-expression-minibuffer-setup . paredit-mode)))
+         (lisp-data-mode . paredit-mode)))
 
 ;;; Clojure
 
