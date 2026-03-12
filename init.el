@@ -692,8 +692,7 @@ Add this function to the `after-save-hook'."
   :ensure t
   :custom
 
-  ;; Hide blocks and drawers by default
-  (org-hide-block-startup t)
+  ;; Hide drawers by default
   (org-hide-drawer-startup t)
 
   (org-use-speed-commands t)
@@ -712,6 +711,7 @@ Add this function to the `after-save-hook'."
 
   (org-id-link-to-org-use-id 'use-existing)
 
+  (org-refile-targets '((nil . (:maxlevel . 3))))
   (org-refile-use-outline-path 'file)
   (org-outline-path-complete-in-steps nil)
 
@@ -759,7 +759,7 @@ Add this function to the `after-save-hook'."
   :after org
   :custom (org-download-method 'attach))
 
-;;; Capture
+;;; Task Management
 
 ;; Capture links to resources in other apps, such as Mail, Firefox, etc.
 (use-package org-mac-link
@@ -770,16 +770,37 @@ Add this function to the `after-save-hook'."
 
 (use-package org-capture
   :defer t
-  :after denote-journal
   :bind ("C-c c" . org-capture)
   :custom
-  (org-capture-templates '(("i" "Inbox" entry (file+headline "~/Documents/todo.org" "Inbox")
+  (org-capture-templates '(("i" "Inbox" entry (file+headline "~/Documents/org/todo.org" "Inbox")
                             "* TODO %?\n/Entered on %U/\n\n%i")
                            ("j" "Journal" entry
                             (file denote-journal-path-to-new-or-existing-entry)
-                            "* %U %?\n%i"
+                            "* %?\n%i"
                             :kill-buffer t
-                            :empty-lines 1))))
+                            :empty-lines 1)))
+  :config
+  (require 'denote-journal))
+
+(use-package org
+  :bind
+  ("C-c a" . org-agenda)
+  :custom
+  ;; Agenda
+  (org-agenda-files '("~/Documents/org/todo.org"))
+  (org-agenda-start-with-follow-mode t)
+  ;; TODO
+  (org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "WAIT(w)" "|" "DONE(d)")))
+  ;; Clocking
+  (org-clock-idle-time 1)
+  (org-clock-sound t)
+  :config
+  ;; Display **only** the current item, its ancestors and top-level headings
+  (add-hook 'org-agenda-after-show-hook
+            (lambda ()
+              (org-overview)
+              (org-reveal))))
 
 ;;; Pandoc
 
