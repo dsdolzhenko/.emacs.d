@@ -152,6 +152,12 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :hook (text-mode . typo-mode))
 
+(use-package isearch
+  :custom
+  (isearch-lazy-count t)
+  (lazy-count-prefix-format nil)
+  (lazy-count-suffix-format " [%s/%s]"))
+
 ;;; Backups
 
 ;; Disable lock files
