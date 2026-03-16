@@ -853,6 +853,13 @@ Add this function to the `after-save-hook'."
   ;; Ensure prompts are updated if prompt files change
   (gptel-prompts-add-update-watchers))
 
+(use-package agent-shell
+    :ensure t
+    :ensure-system-package
+    ;; Add agent installation configs here
+    ((claude . "brew install claude-code")
+     (claude-agent-acp . "npm install -g @zed-industries/claude-agent-acp")))
+
 ;;; Git
 
 (use-package magit
