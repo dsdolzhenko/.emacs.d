@@ -209,6 +209,17 @@ The DWIM behaviour of this command is as follows:
   :custom
   (ibuffer-use-other-window t))
 
+(use-package super-save
+  :ensure t
+  :config
+  ;; Save buffers automatically when Emacs is idle
+  (setq super-save-auto-save-when-idle t)
+  ;; Don't display "Wrote file..." messages in the echo area
+  (setq super-save-silent t)
+  ;; Disable the built-in auto-save (backup files) since super-save handles it
+  (setq auto-save-default nil)
+  (super-save-mode +1))
+
 ;;; Minibuffer
 
 ;; Always use short variant of yes-or-no dialog
