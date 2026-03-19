@@ -158,6 +158,9 @@ The DWIM behaviour of this command is as follows:
   (lazy-count-prefix-format nil)
   (lazy-count-suffix-format " [%s/%s]"))
 
+(use-package surround
+  :ensure t
+  :bind-keymap ("M-'" . surround-keymap))
 ;;; Backups
 
 ;; Disable lock files
