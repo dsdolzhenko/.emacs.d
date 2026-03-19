@@ -666,7 +666,11 @@ Add this function to the `after-save-hook'."
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
-     (mermaid . t))))
+     (mermaid . t)))
+
+  ;; Suppress "Warning (org-element): ‘org-element-at-point’ cannot be used in non-Org buffer #<buffer *Org Agenda*> (org-agenda-mode)"
+  (add-to-list 'warning-suppress-log-types '(org-element))
+  (add-to-list 'warning-suppress-types '(org-element)))
 
 (use-package org-contrib
   :ensure t
