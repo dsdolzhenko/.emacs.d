@@ -864,6 +864,8 @@ Add this function to the `after-save-hook'."
 
 (use-package agent-shell
     :ensure t
+    :custom
+    (agent-shell-session-strategy 'prompt)
     :ensure-system-package
     ;; Add agent installation configs here
     ((claude . "brew install claude-code")
