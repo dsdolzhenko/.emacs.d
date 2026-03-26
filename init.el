@@ -77,9 +77,6 @@
 ;; Make kill-visual-line kill the whole line
 (defalias 'kill-visual-line 'kill-line)
 
-;; Require final newline
-(setq require-final-newline t)
-
 ;; Replace selected text by typing
 (setq delete-selection-mode t)
 
@@ -161,6 +158,12 @@ The DWIM behaviour of this command is as follows:
 (use-package surround
   :ensure t
   :bind-keymap ("M-'" . surround-keymap))
+
+(use-package expreg
+  :ensure t
+  :bind (("C-=" . expreg-expand)
+         ("C--" . expreg-contract)))
+
 ;;; Backups
 
 ;; Disable lock files
@@ -181,10 +184,6 @@ The DWIM behaviour of this command is as follows:
   (kept-old-versions 2)
   ;; Use version numbers for backups.
   (version-control t))
-
-;; https://sachachua.com/blog/2025/09/obscure-emacs-package-appreciation-backup-walker/
-(use-package backup-walker
-  :ensure t)
 
 (use-package tramp
   :defer t
@@ -811,15 +810,15 @@ Add this function to the `after-save-hook'."
          (org-mode        . flymake-languagetool-load)
          (markdown-mode   . flymake-languagetool-load))
   :init
-  (setq flymake-languagetool-server-jar nil)
-  (setq flymake-languagetool-language "en-GB")
-  (setq flymake-languagetool-url "https://api.languagetoolplus.com")
+  (setopt flymake-languagetool-server-jar nil)
+  (setopt flymake-languagetool-language "en-GB")
+  (setopt flymake-languagetool-url "https://api.languagetoolplus.com")
   (let ((auth (car (auth-source-search :host "api.languagetoolplus.com"))))
     (when auth
-      (setq flymake-languagetool-api-username (plist-get auth :user))
-      (setq flymake-languagetool-api-key (funcall  (plist-get auth :secret))))))
+      (setopt flymake-languagetool-api-username (plist-get auth :user))
+      (setopt flymake-languagetool-api-key (funcall  (plist-get auth :secret))))))
 
-;;; LLM
+;;; AI
 
 (defun dd/gptel-quick-query ()
   "Prompt for user input and send it to LLM in a new gptel session."
@@ -854,13 +853,6 @@ Add this function to the `after-save-hook'."
   :config
   (gptel-make-gemini "Gemini" :key gptel-api-key :stream t)
   (gptel-make-anthropic "Claude" :stream t :key gptel-api-key))
-
-
-(use-package yaml
-  :ensure t)
-
-(use-package templatel
-  :ensure t)
 
 (use-package agent-shell
     :ensure t
@@ -909,19 +901,7 @@ Add this function to the `after-save-hook'."
                       :weight 'normal
                       :inherit '()))
 
-;;; Navigation
-
-(use-package expreg
-  :ensure t
-  :bind (("C-=" . expreg-expand)
-         ("C--" . expreg-contract)))
-
-;; (use-package outline
-;;   :config
-;;   (put 'outline-regexp 'safe-local-variable #'stringp)
-;;   (put 'outline-level 'safe-local-variable #'functionp))
-
-;;; Auto-complete
+;;; Auto-completion
 
 (use-package corfu
   :ensure t
@@ -968,6 +948,17 @@ Add this function to the `after-save-hook'."
   :ensure t
   :defer t
   :after yasnippet)
+
+;;; Tree-sitter
+
+(use-package treesit-auto
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  (treesit-auto-langs '(c cpp go ruby rust python tsx javascript typescript java kotlin html cmake dockerfile bash yaml json))
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 ;;; Lisp
 
@@ -1042,27 +1033,14 @@ Add this function to the `after-save-hook'."
          ("\\.njk\\'" . web-mode)
          ("\\.liquid\\'" . web-mode)))
 
-;;; Go
-
-(use-package go-mode
-  :ensure t
-  :defer t)
-
 ;;; Kotlin
 
 (use-package kotlin-ts-mode
   :ensure t
-  :mode (("\\.kt\\'" . kotlin-ts-mode))
   :config
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
                  '(kotlin-ts-mode . ("~/.local/opt/kotlin-lsp/kotlin-lsp.sh" "--stdio")))))
-
-;;; Rust
-
-(use-package rust-mode
-  :ensure t
-  :defer t)
 
 ;;; Ruby
 
@@ -1078,9 +1056,9 @@ Add this function to the `after-save-hook'."
 
 ;;; YAML
 
-(use-package yaml-mode
-  :ensure t
-  :defer t)
+(use-package yaml-ts-mode
+  :defer t
+  :hook ((yaml-ts-mode . flymake-mode)))
 
 ;;; CSV
 (use-package csv-mode
@@ -1092,69 +1070,5 @@ Add this function to the `after-save-hook'."
 (use-package jinja2-mode
   :ensure t
   :defer t)
-
-;;; Docker
-
-(use-package dockerfile-mode
-  :ensure t
-  :defer t)
-
-;;; Tree-sitter
-
-(use-package treesit
-  :preface
-  (defun dd/setup-install-grammars ()
-    "Install Tree-sitter grammars if they are absent."
-    (interactive)
-    (dolist (grammar
-             '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.20.0"))
-               (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
-               (go . ("https://github.com/tree-sitter/tree-sitter-go" "v0.20.0"))
-               (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
-               (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.20.1" "src"))
-               (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
-               (markdown . ("https://github.com/ikatyang/tree-sitter-markdown" "v0.7.1"))
-               (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
-               (rust . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2"))
-               (toml . ("https://github.com/tree-sitter/tree-sitter-toml" "v0.5.1"))
-               (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
-               (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-               (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))
-               (kotlin . ("https://github.com/fwcd/tree-sitter-kotlin" "main"))
-               (ruby . ("https://github.com/tree-sitter/tree-sitter-ruby" "v0.23.1"))))
-      (add-to-list 'treesit-language-source-alist grammar)
-      ;; Only install `grammar' if we don't already have it
-      ;; installed. However, if you want to *update* a grammar then
-      ;; this obviously prevents that from happening.
-      (unless (treesit-language-available-p (car grammar))
-        (treesit-install-language-grammar (car grammar)))))
-
-  ;; You can remap major modes with `major-mode-remap-alist'. Note
-  ;; that this does *not* extend to hooks! Make sure you migrate them
-  ;; also
-  (dolist (mapping
-           '((python-mode . python-ts-mode)
-             (css-mode . css-ts-mode)
-             (js-mode . js-ts-mode)
-             (sh-mode . bash-ts-mode)
-             (conf-toml-mode . toml-ts-mode)
-             (go-mode . go-ts-mode)
-             (css-mode . css-ts-mode)
-             (json-mode . json-ts-mode)
-             (js-json-mode . json-ts-mode)
-             (kotlin-mode . kotlin-ts-mode)
-             (ruby-mode . ruby-ts-mode)))
-    (add-to-list 'major-mode-remap-alist mapping))
-  :mode (("\\.tsx\\'" . tsx-ts-mode)
-         ("\\.js\\'"  . typescript-ts-mode)
-         ("\\.mjs\\'" . typescript-ts-mode)
-         ("\\.mts\\'" . typescript-ts-mode)
-         ("\\.cjs\\'" . typescript-ts-mode)
-         ("\\.ts\\'"  . typescript-ts-mode)
-         ("\\.jsx\\'" . tsx-ts-mode)
-         ("\\.json\\'" .  json-ts-mode)
-         ("\\.rb\\'" . ruby-ts-mode))
-  :config
-  (dd/setup-install-grammars))
 
 ;;; init.el ends here
