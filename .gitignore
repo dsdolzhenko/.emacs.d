@@ -12,12 +12,14 @@ eln-cache
 elpa
 eshell
 games
+forge-database.sqlite
 history
 network-security.data
 org-persist
 org-roam.db
 persist
 projectile-bookmarks.eld
+projectile-frecency.eld
 projectile.cache
 projects
 recentf
@@ -25,3 +27,4 @@ tramp
 transient
 tree-sitter
 /.agent-shell/
+url
