@@ -1085,4 +1085,10 @@ Add this function to the `after-save-hook'."
   :ensure t
   :defer t)
 
+;;; Terraform
+
+(use-package terraform-mode
+  :ensure t
+  :defer t)
+
 ;;; init.el ends here
