@@ -1007,14 +1007,10 @@ Add this function to the `after-save-hook'."
 
 ;;; Tree-sitter
 
-(use-package treesit-auto
-  :ensure t
+(use-package treesit
   :custom
-  (treesit-auto-install 'prompt)
-  (treesit-auto-langs '(c cpp go ruby rust python tsx javascript typescript java kotlin html cmake dockerfile bash yaml json))
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (treesit-auto-install-grammar 'always)
+  (treesit-enabled-modes t))
 
 ;;; Lisp
 
@@ -1094,13 +1090,16 @@ Add this function to the `after-save-hook'."
 (use-package kotlin-ts-mode
   :ensure t
   :config
+  (add-to-list 'treesit-language-source-alist '(kotlin . ("https://github.com/fwcd/tree-sitter-kotlin")))
+
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
-                 '(kotlin-ts-mode . ("~/.local/opt/kotlin-lsp/kotlin-lsp.sh" "--stdio")))))
+                 '(kotlin-ts-mode . ("kotlin-lsp" "--stdio"))))
+  :mode (("\\.kt\\'" . kotlin-ts-mode)))
 
 ;;; Ruby
 
-(use-package ruby-ts-mode
+(use-package ruby-mode
   :config
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp"))))
@@ -1113,8 +1112,7 @@ Add this function to the `after-save-hook'."
 ;;; YAML
 
 (use-package yaml-ts-mode
-  :defer t
-  :hook ((yaml-ts-mode . flymake-mode)))
+  :defer t)
 
 ;;; CSV
 (use-package csv-mode
