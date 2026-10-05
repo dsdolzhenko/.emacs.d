@@ -59,6 +59,26 @@
 (global-set-key (kbd "<C-wheel-up>") 'ignore)
 (global-set-key (kbd "<C-wheel-down>") 'ignore)
 
+;;;
+;;; Essentials
+;;;
+
+;; Automatically select window buffers
+(setq help-window-select t)
+
+;; Save the existing clipboard content into the kill ring before overwriting it
+(setq save-interprogram-paste-before-kill t)
+
+;; Don’t put duplicates into the kill ring
+(setq kill-do-not-save-duplicates t)
+
+;; Faster mark poping.
+;; With this setting, after the first C-u C-SPC you can keep pressing just C-SPC to continue popping.
+(setq set-mark-command-repeat-pop t)
+
+;;
+(repeat-mode 1)
+
 ;;; Editing
 
 ;; Use Command key on MacOS to Meta key.
@@ -783,6 +803,11 @@ Add this function to the `after-save-hook'."
               (org-overview)
               (org-reveal))))
 
+(setq org-agenda-prefix-format
+      '((agenda . " %i %-30:c%?-12t% s")
+        (todo   . " %i %-30:c")
+        (tags   . " %i %-30:c")
+        (search . " %i %-30:c")))
 ;;; Pandoc
 
 (defun dd/pandoc-convert-text (text from-format to-format)
