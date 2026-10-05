@@ -567,7 +567,7 @@ programming symbol, like a function or variable."
   :ensure t
   :defer t
   :custom
-  (projectile-switch-project-action 'projectile-commander)
+  (projectile-switch-project-action 'projectile-dired)
   :config
   (projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map)
