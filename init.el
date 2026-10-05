@@ -927,8 +927,30 @@ Add this function to the `after-save-hook'."
   ;; that it affects performance
   (eglot-events-buffer-size 0)
   (eglot-ignored-server-capabilities '(:inlayHintProvider))
+
+  ;; Cleans up Emacs 31 visual noise
+  (eglot-code-action-indications nil)
+
+  ;; Overwrite defaults
+  (eglot-autoshutdown t)
+  (eglot-confirm-server-edits nil)
+  (eglot-report-progress t)
+  (eglot-extend-to-xref t)
+  (eglot-sync-connect 1)
+  (eglot-connect-timeout 60)
+
   :bind
-  ("s-<return>" . eglot-code-actions)
+  (("s-<return>" . eglot-code-actions)
+   ("C-c i i" . eglot-find-implementation)
+   ("C-c i e" . eglot)
+   ("C-c i k" . eglot-shutdown-all)
+   ("C-c i r" . eglot-rename)
+   ("C-c i x" . eglot-reconnect)
+   ("C-c i a" . eglot-code-actions)
+   ("C-c i m" . eglot-menu)
+   ("C-c i f" . eglot-format-buffer)
+   ("C-c i h" . eglot-inlay-hints-mode))
+
   :config
   ;; Otherwise my eyes are bleeding
   (set-face-attribute 'eglot-mode-line nil
