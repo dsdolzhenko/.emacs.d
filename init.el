@@ -444,6 +444,12 @@ The DWIM behaviour of this command is as follows:
   :custom (aw-dispatch-always t)
   :bind ("C-c w" . ace-window))
 
+;;; Misc
+
+(use-package misc
+  :bind (("M-z" . zap-up-to-char)
+         ("M-Z" . zap-to-char)))
+
 ;;; Bookmarks
 
 (use-package bookmark
