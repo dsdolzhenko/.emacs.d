@@ -302,7 +302,8 @@ The DWIM behaviour of this command is as follows:
 
    ;; M-s bindings in `search-map'
    ("C-c s f" . consult-find)
-   ("C-c s r" . consult-ripgrep))
+   ("C-c s r" . consult-ripgrep)
+   ("C-c s l" . consult-line))
 
   :init
   ;; Use Consult to select xref locations with preview
