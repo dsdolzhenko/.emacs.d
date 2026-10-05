@@ -191,15 +191,21 @@ The DWIM behaviour of this command is as follows:
 
 ;;; Buffers
 
-;; Shortcut to kill the current buffer.
-;;
-;; Unlike the default, this one kills the buffer
-;; *without confirmation* if it is not modified.
-(defun dd/kill-this-buffer ()
-  (interactive)
-  (kill-buffer (current-buffer)))
 
-(global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
+(use-package window
+  :config
+  ;; Shortcut to kill the current buffer.
+  ;;
+  ;; Unlike the default, this one kills the buffer
+  ;; *without confirmation* if it is not modified.
+  (defun dd/kill-this-buffer ()
+    (interactive)
+    (kill-buffer (current-buffer)))
+
+  (global-set-key (kbd "C-x k") 'dd/kill-this-buffer)
+  (bind-key "C-c z" #'bury-buffer)
+  (bind-key "C-c Z" #'unbury-buffer))
+
 
 ;; Use ibuffer instead of buffer list
 (use-package ibuffer
