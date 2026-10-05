@@ -907,6 +907,10 @@ Add this function to the `after-save-hook'."
   (magit-bury-buffer-function 'magit-restore-window-configuration)
   :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer)))
 
+(use-package forge
+  :ensure t
+  :after magit)
+
 (use-package consult-vc-modified-files
   :ensure t
   :bind
