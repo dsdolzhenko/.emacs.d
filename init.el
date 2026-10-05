@@ -650,6 +650,13 @@ Add this function to the `after-save-hook'."
 
 (use-package org
   :ensure t
+
+  :preface
+  (defun org-id-complete-link (&optional arg)
+    "Create an id: link using completion"
+    (concat "id:"
+            (org-id-get-with-outline-path-completion)))
+
   :custom
 
   ;; Hide drawers by default
@@ -691,6 +698,13 @@ Add this function to the `after-save-hook'."
    'org-babel-load-languages
    '((shell . t)
      (mermaid . t)))
+
+  ;; Update ID file .org-id-locations on startup
+  (org-id-update-id-locations)
+
+  ;; Enable complition for id links
+  (org-link-set-parameters "id"
+                           :complete 'org-id-complete-link)
 
   ;; Suppress "Warning (org-element): ‘org-element-at-point’ cannot be used in non-Org buffer #<buffer *Org Agenda*> (org-agenda-mode)"
   (with-eval-after-load 'warnings
@@ -737,23 +751,31 @@ Add this function to the `after-save-hook'."
   :defer t
   :bind ("C-c c" . org-capture)
   :custom
-  (org-capture-templates '(("i" "Inbox" entry (file+headline "~/Documents/org/todo.org" "Inbox")
-                            "* TODO %?\n/Entered on %U/\n\n%i")
-                           ("j" "Journal" entry
-                            (file denote-journal-path-to-new-or-existing-entry)
-                            "* %?\n%i"
-                            :kill-buffer t
-                            :empty-lines 1)))
-  :config
-  (require 'denote-journal))
+  (org-capture-templates
+   '(("i" "Inbox" entry
+      (file+olp "~/Documents/org/gtd.org" "Inbox")
+      "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
+
+     ("j" "Journal" entry
+      (file+olp+datetree "~/Documents/org/gtd.org" "Journal")
+      "* %?\n")
+
+     ("m" "Meeting" entry
+      (file+olp+datetree "~/Documents/org/gtd.org" "Journal")
+      "* %? :meeting:\n** Notes\n** Action points\n"))))
 
 (use-package org
   :bind
   ("C-c a" . org-agenda)
   :custom
   ;; Agenda
-  (org-agenda-files '("~/Documents/org/todo.org"))
+  (org-agenda-files '("~/Documents/org/gtd.org"))
   (org-agenda-start-with-follow-mode t)
+  (org-agenda-prefix-format
+   '((agenda . " %i %-12:c%?-12t% s")
+     (todo   . " %i %-12:c")
+     (tags   . " %i %-12:c")
+     (search . " %i %-12:c")))
   ;; TODO
   (org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "WAIT(w)" "|" "DONE(d)")))
