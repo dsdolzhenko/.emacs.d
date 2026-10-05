@@ -462,7 +462,8 @@ The DWIM behaviour of this command is as follows:
 (use-package tramp
   :config
   (add-to-list 'backup-directory-alist
-               (cons tramp-file-name-regexp nil)))
+               (cons tramp-file-name-regexp nil))
+  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
 
 ;;; Dired
 
