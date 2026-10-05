@@ -722,14 +722,8 @@ Add this function to the `after-save-hook'."
 (use-package simple
   :defer t)
 
-;; Wrap lines at fill-column in org-mode
-(use-package visual-fill-column
-  :ensure t
-  :defer t
-  :custom (fill-column 110)
-  :hook
-  (org-mode . visual-line-mode)
-  (org-mode . visual-fill-column-mode))
+(use-package org-mode
+  :hook (org-mode . visual-line-mode))
 
 ;; Handy utility to capture attachments from clipboard
 (use-package org-download
