@@ -327,7 +327,7 @@ The DWIM behaviour of this command is as follows:
                  (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
-  :ensure t ; only need to install it, embark loads it after consult if found
+  :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
