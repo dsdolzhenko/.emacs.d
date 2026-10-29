@@ -532,6 +532,12 @@ The DWIM behaviour of this command is as follows:
 (use-package compile
   :custom (compilation-scroll-output t))
 
+;;; ghostel
+
+(use-package ghostel
+  :ensure t
+  :bind (("C-x m" . ghostel)))
+
 ;;; vterm
 
 (use-package vterm
