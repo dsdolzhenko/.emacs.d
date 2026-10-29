@@ -13,6 +13,9 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (load custom-file)
 
+;; Local, unpublished modules
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
 ;;; Packages
 
 ;; Initialize and refresh package contents again if needed
@@ -767,6 +770,8 @@ Add this function to the `after-save-hook'."
   :after org
   :bind ("C-c g" . org-mac-link-get-link))
 
+(require 'dd-org-gtd)
+
 (use-package org-capture
   :defer t
   :bind ("C-c c" . org-capture)
@@ -776,13 +781,17 @@ Add this function to the `after-save-hook'."
       (file+olp "~/Documents/org/gtd.org" "Inbox")
       "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
 
-     ("j" "Journal" entry
-      (file+olp+datetree "~/Documents/org/gtd.org" "Journal")
-      "* %?\n")
+     ("t" "Task to Project/Area" entry
+      (function dd/org-capture-task-target)
+      "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
 
      ("m" "Meeting" entry
+      (function dd/org-capture-meeting-target)
+      "* [%<%Y-%m-%d %a>] %?\n** Notes\n** Action items\n")
+
+     ("j" "Journal" entry
       (file+olp+datetree "~/Documents/org/gtd.org" "Journal")
-      "* %? :meeting:\n** Notes\n** Action points\n"))))
+      "* %?\n"))))
 
 (use-package org
   :bind
