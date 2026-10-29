@@ -134,7 +134,7 @@ Area, or Person and move point to its Meetings/1on1s subheading
                (dd/org-gtd--select-target
                 '(("Projects" . "Meetings")
                   ("Areas" . "Meetings")
-                  ("People" . "1on1s"))
+                  ("People" . "Meetings"))
                 "Capture meeting for: ")))
     (set-buffer (marker-buffer marker))
     (widen)
