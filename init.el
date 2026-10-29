@@ -789,6 +789,10 @@ Add this function to the `after-save-hook'."
       (function dd/org-capture-meeting-target)
       "* [%<%Y-%m-%d %a>] %?\n** Notes\n** Action items\n")
 
+     ("n" "Note" entry
+      (function dd/org-capture-note-target)
+      "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
+
      ("j" "Journal" entry
       (file+olp+datetree "~/Documents/org/gtd.org" "Journal")
       "* %?\n"))))

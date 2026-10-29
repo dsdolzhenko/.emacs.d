@@ -9,8 +9,8 @@
 ;;
 ;; Provides `:function' targets for org-capture that prompt (via
 ;; `completing-read') for a non-archived Project/Area (tasks) or
-;; Project/Area/Person (meetings) from `dd/org-gtd-file', then file
-;; the new entry under that heading's Tasks/Meetings/1on1s
+;; Project/Area/Person (meetings, notes) from `dd/org-gtd-file', then
+;; file the new entry under that heading's Tasks/Meetings/Notes
 ;; subheading, creating the subheading if it doesn't exist yet.
 
 ;;; Code:
@@ -128,14 +128,29 @@ Area and move point to its Tasks subheading (creating it if needed)."
 
 (defun dd/org-capture-meeting-target ()
   "org-capture `:function' target: prompt for a non-archived Project,
-Area, or Person and move point to its Meetings/1on1s subheading
-(creating it if needed)."
+Area, or Person and move point to its Meetings subheading (creating
+it if needed)."
   (pcase-let ((`(,marker ,child ,_section)
                (dd/org-gtd--select-target
                 '(("Projects" . "Meetings")
                   ("Areas" . "Meetings")
                   ("People" . "Meetings"))
                 "Capture meeting for: ")))
+    (set-buffer (marker-buffer marker))
+    (widen)
+    (goto-char marker)
+    (dd/org-gtd--goto-or-create-child child)))
+
+(defun dd/org-capture-note-target ()
+  "org-capture `:function' target: prompt for a non-archived Project,
+Area, or Person and move point to its Notes subheading (creating it
+if needed)."
+  (pcase-let ((`(,marker ,child ,_section)
+               (dd/org-gtd--select-target
+                '(("Projects" . "Notes")
+                  ("Areas" . "Notes")
+                  ("People" . "Notes"))
+                "Capture note for: ")))
     (set-buffer (marker-buffer marker))
     (widen)
     (goto-char marker)

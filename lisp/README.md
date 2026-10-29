@@ -16,8 +16,11 @@ Currently provides the org-capture `:function` targets wired up in
 - `dd/org-capture-task-target` — prompt for a non-archived Project or Area,
   file the new entry under its `Tasks` subheading (created if missing).
 - `dd/org-capture-meeting-target` — prompt for a non-archived Project, Area,
-  or Person, file the new entry under `Meetings` (Project/Area) or `1on1s`
-  (Person), creating the subheading if missing.
+  or Person, file the new entry under its `Meetings` subheading (created if
+  missing).
+- `dd/org-capture-note-target` — prompt for a non-archived Project, Area, or
+  Person, file the new entry under its `Notes` subheading (created if
+  missing).
 
 Candidates in the prompt are grouped by section (Projects/Areas/People) via
 the standard `group-function` completion metadata, which completion UIs that

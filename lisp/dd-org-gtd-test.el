@@ -20,6 +20,8 @@
 *** Old project
 * Areas
 ** Demo area
+*** Notes
+- existing area note
 * People
 ** Demo person
 *** 1on1s
@@ -114,12 +116,35 @@
         (org-up-heading-safe)
         (should (equal (org-get-heading t t t t) "Demo area"))))))
 
-(ert-deftest dd-org-gtd-test/capture-meeting-target-lands-on-1on1s-for-person ()
+(ert-deftest dd-org-gtd-test/capture-meeting-target-lands-on-meetings-for-person ()
   (dd/org-gtd-test--with-fixture
     (cl-letf (((symbol-function 'completing-read)
                (lambda (&rest _) "Demo person")))
       (dd/org-capture-meeting-target)
-      (should (equal (org-get-heading t t t t) "1on1s"))
+      (should (equal (org-get-heading t t t t) "Meetings"))
+      (save-excursion
+        (org-up-heading-safe)
+        (should (equal (org-get-heading t t t t) "Demo person"))))))
+
+(ert-deftest dd-org-gtd-test/capture-note-target-reuses-existing-notes ()
+  (dd/org-gtd-test--with-fixture
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (&rest _) "Demo area")))
+      (dd/org-capture-note-target)
+      (should (equal (org-get-heading t t t t) "Notes"))
+      (save-excursion
+        (org-up-heading-safe)
+        (should (equal (org-get-heading t t t t) "Demo area")))
+      ;; Still exactly one "Notes" heading under the area.
+      (goto-char (point-min))
+      (should (= 1 (how-many "^\\*\\*\\* Notes$"))))))
+
+(ert-deftest dd-org-gtd-test/capture-note-target-creates-notes-for-person ()
+  (dd/org-gtd-test--with-fixture
+    (cl-letf (((symbol-function 'completing-read)
+               (lambda (&rest _) "Demo person")))
+      (dd/org-capture-note-target)
+      (should (equal (org-get-heading t t t t) "Notes"))
       (save-excursion
         (org-up-heading-safe)
         (should (equal (org-get-heading t t t t) "Demo person"))))))
