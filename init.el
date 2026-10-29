@@ -781,7 +781,7 @@ Add this function to the `after-save-hook'."
       (file+olp "~/Documents/org/gtd.org" "Inbox")
       "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
 
-     ("t" "Task to Project/Area" entry
+     ("t" "Task" entry
       (function dd/org-capture-task-target)
       "* TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n")
 
