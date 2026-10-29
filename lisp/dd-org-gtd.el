@@ -25,9 +25,10 @@
 
 SECTION-CHILD-ALIST maps a top-level heading name (e.g. \"Projects\")
 to the name of the child subheading new entries should be filed under
-(e.g. \"Tasks\"). Returns an alist of (DISPLAY . (MARKER . CHILD-NAME))
-for every non-archived level-2 heading found under one of those
-top-level sections, where DISPLAY has org link markup stripped."
+(e.g. \"Tasks\"). Returns an alist of (DISPLAY . (MARKER CHILD-NAME
+SECTION)) for every non-archived level-2 heading found under one of
+those top-level sections, where DISPLAY has org link markup stripped
+and SECTION is the matched top-level heading name."
   (let (candidates)
     (with-current-buffer (find-file-noselect (expand-file-name dd/org-gtd-file))
       (org-with-wide-buffer
@@ -42,17 +43,40 @@ top-level sections, where DISPLAY has org link markup stripped."
                          (not (member org-archive-tag (org-get-tags))))
                 (push (cons (org-link-display-format
                              (org-trim (org-get-heading t t t t)))
-                            (cons (point-marker) child-name))
+                            (list (point-marker) child-name parent))
                       candidates)))))
         nil 'file)))
     (nreverse candidates)))
 
+(defun dd/org-gtd--group-completion-table (candidates)
+  "Completion table over CANDIDATES, an alist of DISPLAY . (MARKER
+CHILD-NAME SECTION) as returned by
+`dd/org-gtd--non-archived-level2-targets'.
+
+Groups candidates by SECTION via the standard `group-function'
+completion metadata, which completion UIs such as Vertico use to
+render titled groups; UIs that don't support it just show a flat
+list, so this never changes matching/selection behavior."
+  (lambda (string pred action)
+    (if (eq action 'metadata)
+        `(metadata
+          (category . dd-org-gtd-target)
+          (group-function
+           . ,(lambda (cand transform)
+                (if transform
+                    cand
+                  (nth 2 (cdr (assoc cand candidates)))))))
+      (complete-with-action action candidates string pred))))
+
 (defun dd/org-gtd--select-target (section-child-alist prompt)
   "Prompt via `completing-read' for one heading from
-SECTION-CHILD-ALIST (see `dd/org-gtd--non-archived-level2-targets').
-Return (MARKER . CHILD-NAME) for the selection."
+SECTION-CHILD-ALIST (see `dd/org-gtd--non-archived-level2-targets'),
+grouped by section where the completion UI supports it.
+Return (MARKER CHILD-NAME SECTION) for the selection."
   (let* ((candidates (dd/org-gtd--non-archived-level2-targets section-child-alist))
-         (choice (completing-read prompt candidates nil t))
+         (choice (completing-read prompt
+                                   (dd/org-gtd--group-completion-table candidates)
+                                   nil t))
          (target (assoc choice candidates)))
     (unless target
       (user-error "No matching GTD heading selected"))
@@ -93,7 +117,7 @@ level if it doesn't already exist."
 (defun dd/org-capture-task-target ()
   "org-capture `:function' target: prompt for a non-archived Project or
 Area and move point to its Tasks subheading (creating it if needed)."
-  (pcase-let ((`(,marker . ,child)
+  (pcase-let ((`(,marker ,child ,_section)
                (dd/org-gtd--select-target
                 '(("Projects" . "Tasks") ("Areas" . "Tasks"))
                 "Capture task to Project/Area: ")))
@@ -106,7 +130,7 @@ Area and move point to its Tasks subheading (creating it if needed)."
   "org-capture `:function' target: prompt for a non-archived Project,
 Area, or Person and move point to its Meetings/1on1s subheading
 (creating it if needed)."
-  (pcase-let ((`(,marker . ,child)
+  (pcase-let ((`(,marker ,child ,_section)
                (dd/org-gtd--select-target
                 '(("Projects" . "Meetings")
                   ("Areas" . "Meetings")

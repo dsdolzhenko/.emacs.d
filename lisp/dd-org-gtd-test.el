@@ -41,19 +41,36 @@
 
 (ert-deftest dd-org-gtd-test/targets-for-tasks ()
   (dd/org-gtd-test--with-fixture
-    (let ((displays (mapcar #'car
-                             (dd/org-gtd--non-archived-level2-targets
-                              '(("Projects" . "Tasks") ("Areas" . "Tasks"))))))
-      (should (equal displays '("ABC-1: Demo project" "Demo area"))))))
+    (let ((candidates (dd/org-gtd--non-archived-level2-targets
+                        '(("Projects" . "Tasks") ("Areas" . "Tasks")))))
+      (should (equal (mapcar #'car candidates)
+                     '("ABC-1: Demo project" "Demo area")))
+      (should (equal (nth 2 (cdr (assoc "ABC-1: Demo project" candidates))) "Projects"))
+      (should (equal (nth 2 (cdr (assoc "Demo area" candidates))) "Areas")))))
 
 (ert-deftest dd-org-gtd-test/targets-for-meetings-include-people ()
   (dd/org-gtd-test--with-fixture
-    (let ((displays (mapcar #'car
-                             (dd/org-gtd--non-archived-level2-targets
-                              '(("Projects" . "Meetings")
-                                ("Areas" . "Meetings")
-                                ("People" . "1on1s"))))))
-      (should (equal displays '("ABC-1: Demo project" "Demo area" "Demo person"))))))
+    (let ((candidates (dd/org-gtd--non-archived-level2-targets
+                        '(("Projects" . "Meetings")
+                          ("Areas" . "Meetings")
+                          ("People" . "1on1s")))))
+      (should (equal (mapcar #'car candidates)
+                     '("ABC-1: Demo project" "Demo area" "Demo person")))
+      (should (equal (nth 2 (cdr (assoc "Demo person" candidates))) "People")))))
+
+(ert-deftest dd-org-gtd-test/group-completion-table-groups-by-section ()
+  (dd/org-gtd-test--with-fixture
+    (let* ((candidates (dd/org-gtd--non-archived-level2-targets
+                         '(("Projects" . "Meetings")
+                           ("Areas" . "Meetings")
+                           ("People" . "1on1s"))))
+           (table (dd/org-gtd--group-completion-table candidates))
+           (group-fn (alist-get 'group-function (cdr (funcall table "" nil 'metadata)))))
+      (should (equal (funcall group-fn "ABC-1: Demo project" nil) "Projects"))
+      (should (equal (funcall group-fn "Demo area" nil) "Areas"))
+      (should (equal (funcall group-fn "Demo person" nil) "People"))
+      ;; TRANSFORM non-nil must return the candidate unchanged.
+      (should (equal (funcall group-fn "Demo area" t) "Demo area")))))
 
 (ert-deftest dd-org-gtd-test/find-child-heading ()
   (dd/org-gtd-test--with-fixture

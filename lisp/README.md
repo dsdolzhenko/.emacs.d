@@ -19,6 +19,11 @@ Currently provides the org-capture `:function` targets wired up in
   or Person, file the new entry under `Meetings` (Project/Area) or `1on1s`
   (Person), creating the subheading if missing.
 
+Candidates in the prompt are grouped by section (Projects/Areas/People) via
+the standard `group-function` completion metadata, which completion UIs that
+support it (e.g. Vertico) render as titled groups — no extra dependency;
+UIs without support just show a flat list.
+
 More GTD-related helpers may move into this module over time.
 
 ### Loading
