@@ -980,11 +980,6 @@ Add this function to the `after-save-hook'."
 
 ;;; Git
 
-;; Disable built-in VC
-(use-package vc
-  :custom
-  (vc-handled-backends nil))
-
 (use-package magit
   :ensure t
   :defer t
