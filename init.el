@@ -972,6 +972,7 @@ Add this function to the `after-save-hook'."
     :ensure t
     :custom
     (agent-shell-session-strategy 'prompt)
+    (agent-shell-preferred-agent-config (agent-shell-anthropic-make-claude-code-config))
     :ensure-system-package
     ;; Add agent installation configs here
     ((claude . "brew install claude-code")
