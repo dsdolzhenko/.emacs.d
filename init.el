@@ -470,6 +470,12 @@ The DWIM behaviour of this command is as follows:
 
 ;;; Windows
 
+(use-package tab-bar
+  :custom
+  ((tab-bar-show . nil))
+  :config
+  (tab-bar-mode))
+
 (use-package windmove
   :ensure t
   :bind (("C-<" . shrink-window-horizontally)
@@ -629,8 +635,10 @@ programming symbol, like a function or variable."
   :defer t
   :custom
   (projectile-switch-project-action 'projectile-dired)
+  (projectile-session-default-action 'projectile-dired)
   :config
   (projectile-mode)
+  (projectile-session-mode +1)
   :bind-keymap ("C-c p" . projectile-command-map)
   :bind (:map projectile-command-map
               ("s ." . dd/projectile-ripgrep-symbol))
