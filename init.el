@@ -568,41 +568,6 @@ The DWIM behaviour of this command is as follows:
   :ensure t
   :bind (("C-x m" . ghostel)))
 
-;;; vterm
-
-(use-package vterm
-  :ensure t
-  :defer t
-  :commands (vterm vterm-other-window)
-  :custom
-  (vterm-kill-buffer-on-exit t)
-  (vterm-ignore-blink-cursor t)
-  ;; TODO: Otherwise, projectile-run-vterm doesn’t reuse existing buffer
-  ;; https://github.com/bbatsov/projectile/pull/1474/changes
-  ;; (vterm-buffer-name-string "vterm %s") ;; %s will be replaced with current directory
-  ;; Commands used by https://github.com/pymander/vfish
-  (vterm-eval-cmds '(("find-file" find-file)
-                     ("message" message)
-                     ("vterm-clear-scrollback" vterm-clear-scrollback)
-                     ("dired" dired)
-                     ("ediff-files" ediff-files)))
-  (vterm-shell "/opt/homebrew/bin/fish")
-  (vterm-tramp-shells '((t login-shell) ("docker" "/bin/bash")))
-  :bind (("C-c v" . vterm)
-         ("C-c V" . vterm-other-window)
-         ("C-c C-t" . vterm-copy-mode))
-  :hook
-  ;; A hack to avoid flickering
-  ;; https://github.com/akermu/emacs-libvterm/issues/432#issuecomment-894230991
-  (vterm-mode . (lambda () (setq-local global-hl-line-mode nil)))
-  (vterm-copy-mode . (lambda () (call-interactively 'hl-line-mode))))
-
-(use-package vterm-editor
-  :ensure t
-  :after vterm
-  :bind (:map vterm-mode-map
-              ("C-c e" . vterm-editor-open)))
-
 ;;; Crux
 
 (use-package crux
