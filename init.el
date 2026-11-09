@@ -955,11 +955,11 @@ Add this function to the `after-save-hook'."
   :custom
   (magit-display-buffer-function 'magit-display-buffer-fullframe-status-topleft-v1)
   (magit-bury-buffer-function 'magit-restore-window-configuration)
-  :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer)))
-
-(use-package forge
-  :ensure t
-  :after magit)
+  :hook ((git-commit-post-finish . #'dd/magit-kill-diff-buffer))
+  :config
+  (magit-add-section-hook 'magit-status-sections-hook
+                          #'magit-insert-worktrees
+                          nil t))
 
 (use-package consult-vc-modified-files
   :ensure t
