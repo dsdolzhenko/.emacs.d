@@ -1170,6 +1170,14 @@ Add this function to the `after-save-hook'."
          ("\\.njk\\'" . web-mode)
          ("\\.liquid\\'" . web-mode)))
 
+;;; TypeScript
+
+(use-package typescript-ts-mode
+  :mode (("\\.ts\\'" . typescript-ts-mode)))
+
+(use-package tsx-ts-mode
+  :mode (("\\.tsx\\'" . tsx-ts-mode)))
+
 ;;; Kotlin
 
 (use-package kotlin-ts-mode
