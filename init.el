@@ -419,6 +419,27 @@ The DWIM behaviour of this command is as follows:
 ;; Minimalistic layout for the modeline
 (use-package mood-line
   :ensure t
+  :preface
+  (defun dd/mood-line-segment-projectile ()
+    (projectile-project-name))
+  :custom
+  (mood-line-format
+   (mood-line-defformat
+     :left
+     (((mood-line-segment-modal)                  . " ")
+      ((or (mood-line-segment-buffer-status) " ") . " ")
+      ((mood-line-segment-buffer-name)            . "  ")
+      ((mood-line-segment-anzu)                   . "  ")
+      ((mood-line-segment-multiple-cursors)       . "  ")
+      ((mood-line-segment-cursor-position)        . " ")
+      (mood-line-segment-scroll))
+     :right
+     (((dd/mood-line-segment-projectile) . " ")
+      ((mood-line-segment-vc)         . "  ")
+      ((mood-line-segment-major-mode) . "  ")
+      ((mood-line-segment-misc-info)  . "  ")
+      ((mood-line-segment-checker)    . "  ")
+      ((mood-line-segment-process)    . "  "))))
   :config
   (mood-line-mode))
 
