@@ -18,9 +18,11 @@ network-security.data
 org-persist
 org-roam.db
 persist
+perspective.state
 projectile-bookmarks.eld
 projectile-frecency.eld
 projectile.cache
+projectile-sessions
 projects
 recentf
 tramp
