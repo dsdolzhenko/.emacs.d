@@ -1,5 +1,8 @@
 ;;; early-init.el -*- lexical-binding: t; -*-
 
+;; Start Emacs maximized
+(push '(fullscreen . maximized) default-frame-alist)
+
 ;;; Garbage collection
 
 ;; Garbage collection significantly affects startup times. This setting delays
