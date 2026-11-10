@@ -40,7 +40,7 @@
 ;;; Desktop
 
 ;; Persist session state (opened files, buffers, etc) between Emacs restarts
-(desktop-save-mode t)
+;; (desktop-save-mode t)
 
 ;;; Environment
 
@@ -422,24 +422,24 @@ The DWIM behaviour of this command is as follows:
   :preface
   (defun dd/mood-line-segment-projectile ()
     (projectile-project-name))
-  :custom
-  (mood-line-format
-   (mood-line-defformat
-     :left
-     (((mood-line-segment-modal)                  . " ")
-      ((or (mood-line-segment-buffer-status) " ") . " ")
-      ((mood-line-segment-buffer-name)            . "  ")
-      ((mood-line-segment-anzu)                   . "  ")
-      ((mood-line-segment-multiple-cursors)       . "  ")
-      ((mood-line-segment-cursor-position)        . " ")
-      (mood-line-segment-scroll))
-     :right
-     (((dd/mood-line-segment-projectile) . " ")
-      ((mood-line-segment-vc)         . "  ")
-      ((mood-line-segment-major-mode) . "  ")
-      ((mood-line-segment-misc-info)  . "  ")
-      ((mood-line-segment-checker)    . "  ")
-      ((mood-line-segment-process)    . "  "))))
+  ;; :custom
+  ;; (mood-line-format
+  ;;  (mood-line-defformat
+  ;;    :left
+  ;;    (((mood-line-segment-modal)                  . " ")
+  ;;     ((or (mood-line-segment-buffer-status) " ") . " ")
+  ;;     ((mood-line-segment-buffer-name)            . "  ")
+  ;;     ((mood-line-segment-anzu)                   . "  ")
+  ;;     ((mood-line-segment-multiple-cursors)       . "  ")
+  ;;     ((mood-line-segment-cursor-position)        . " ")
+  ;;     (mood-line-segment-scroll))
+  ;;    :right
+  ;;    (((dd/mood-line-segment-projectile) . " ")
+  ;;     ((mood-line-segment-vc)         . "  ")
+  ;;     ((mood-line-segment-major-mode) . "  ")
+  ;;     ((mood-line-segment-misc-info)  . "  ")
+  ;;     ((mood-line-segment-checker)    . "  ")
+  ;;     ((mood-line-segment-process)    . "  "))))
   :config
   (mood-line-mode))
 
@@ -470,11 +470,39 @@ The DWIM behaviour of this command is as follows:
 
 ;;; Windows
 
-(use-package tab-bar
-  :custom
-  ((tab-bar-show . nil))
+;; (use-package tab-bar
+;;   :custom
+;;   ((tab-bar-show  't))
+;;   :config
+;;   (tab-bar-mode))
+
+(use-package window
   :config
-  (tab-bar-mode))
+  ;; Source: https://github.com/nex3/perspective-el#some-musings-on-emacs-window-layouts
+  (customize-set-variable 'display-buffer-base-action
+                          '((display-buffer-reuse-window display-buffer-same-window)
+                            (reusable-frames . t)))
+  (customize-set-variable 'even-window-sizes nil))
+
+(use-package perspective
+  :ensure t
+  :bind
+  ("C-x C-b" . persp-list-buffers)
+  :custom
+  (persp-state-default-file (concat user-emacs-directory "perspective.state"))
+  (persp-show-modestring nil)
+  (persp-mode-prefix-key (kbd "C-c M-p"))
+  :init
+  (persp-mode)
+  (persp-state-load persp-state-default-file)
+  :config
+  (add-hook 'kill-emacs-hook #'persp-state-save))
+
+(use-package perspective
+  :after (consult)
+  :config
+  (consult-customize consult-source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source))
 
 (use-package windmove
   :ensure t
@@ -595,6 +623,9 @@ programming symbol, like a function or variable."
         (message "You point at nothing")
       (projectile-ripgrep (string-trim symbol)))))
 
+(use-package persp-projectile
+  :ensure t)
+
 (use-package projectile
   :ensure t
   :defer t
@@ -603,7 +634,7 @@ programming symbol, like a function or variable."
   (projectile-session-default-action 'projectile-dired)
   :config
   (projectile-mode)
-  (projectile-session-mode +1)
+  ;;  (projectile-session-mode +1)
   :bind-keymap ("C-c p" . projectile-command-map)
   :bind (:map projectile-command-map
               ("s ." . dd/projectile-ripgrep-symbol))
