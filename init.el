@@ -594,6 +594,7 @@ The DWIM behaviour of this command is as follows:
 
 (use-package ghostel
   :ensure t
+  :custom (ghostel-tramp-shell-integration t)
   :bind (("C-x m" . ghostel)))
 
 ;;; Crux
